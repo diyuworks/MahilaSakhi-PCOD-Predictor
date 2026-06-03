@@ -6,7 +6,12 @@ import numpy as np
 app = Flask(__name__)
 CORS(app)
 
-model = joblib.load("../model/pcod_model.pkl")
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(BASE_DIR, "..", "model", "pcod_model.pkl")
+
+model = joblib.load(model_path)
 
 @app.route("/")
 def home():

@@ -1,0 +1,6 @@
+{"age": 38, "reproductive_goal": "not_interested", "main_concern": "facial_hair",
+ "context": {"uterus": "no", "ovaries": "both", "menopause_status": "none"},
+ "symptoms": {"facial_hair": "moderate", "acne": "occasional", "hair_loss": "mild"},
+ "impact": {"facial_hair": "a_lot"},
+ "metabolic": {"bmi": 26.1, "waist_cm": 84, "family_history_diabetes": true},
+ "wellbeing": {"phq9_total": 6, "gad7_total": 4, "sleep_problem_0_4": 1}}

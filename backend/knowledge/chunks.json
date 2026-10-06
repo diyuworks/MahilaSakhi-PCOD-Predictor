@@ -1,0 +1,9 @@
+[
+  {"id": "PCOS-GL-2023-ANDROGEN-01", "tags": ["androgen"], "source": "International Evidence-based Guideline for PCOS 2023 (Teede et al.)",
+   "locator": "TODO section/recommendation number", "verified": false,
+   "text": "TODO: paste the verbatim recommendation text here, then set verified=true after a human check."},
+  {"id": "PCOS-GL-2023-METABOLIC-01", "tags": ["metabolic", "lifestyle"], "source": "International Evidence-based Guideline for PCOS 2023 (Teede et al.)",
+   "locator": "TODO", "verified": false, "text": "TODO"},
+  {"id": "PCOS-GL-2023-MENTAL-01", "tags": ["mental"], "source": "International Evidence-based Guideline for PCOS 2023 (Teede et al.)",
+   "locator": "TODO", "verified": false, "text": "TODO"}
+]

@@ -4,3 +4,9 @@ gunicorn
 numpy
 scikit-learn
 pandas
+openai
+openpyxl
+joblib
+pydantic
+reportlab
+pytest

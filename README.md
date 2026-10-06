@@ -41,15 +41,51 @@ The platform replaces legacy single-form prediction with a validated **care-navi
 
 ---
 
-## 🧩 System Architecture
+## 🧩 Care-Navigation System Architecture
 
-User Input → React Dashboard
-⬇
-Flask API
-⬇
-Machine Learning Model
-⬇
-Prediction + Health Insights
+```mermaid
+flowchart TD
+    A[Patient Enters Onboarding] --> B[DPDP Consent & Privacy Screen]
+    B --> C[Step 1: Biological Context Gate]
+    C -->|Uterus = No| D[Ovaries & Surgical Menopause Check]
+    C -->|Uterus = Yes| E[Menopause & Hormone Context]
+    D --> F[Suppresses Cycle Tracking & Period Questions]
+    E --> G[Step 2-3: Multidimensional Symptoms & Impact]
+    F --> G
+    G --> H[Step 4: Metabolic & Optional Lab Inputs]
+    H --> I[Step 5: Wellbeing PHQ-9 & GAD-7]
+    I -->|PHQ-9 Item 9 > 0| J[Immediate Persistent Tele-MANAS 14416 Alert]
+    I --> K[Step 6: Chief Concern Selection]
+    K --> L[Synthesis Engine /v3/assess]
+    L --> M[Scoring: Severity + Impact + Asian Cutoffs]
+    L --> N[Red-Flag Detector: Today / This Week / 4-6 Weeks]
+    L --> O[Priority Engine: Focus Now / Monitor / Maintain]
+    L --> P[Pathway Routing: Specialists, Tests, Doctor Questions]
+    L --> Q[Evidence Retrieval from chunks.json]
+    Q --> R{Human-Verified Chunks?}
+    R -->|Yes| S[Grounded Explainer Llama-3.1 temperature 0.2]
+    R -->|No or Failed Validation| T[Deterministic Safe Educational Template]
+    M & N & O & P & S & T --> U[Interactive 'My PCOS Care Map' Dashboard]
+    U --> V[Server-Side 1-Page Visit-Prep PDF Export]
+    U --> W[Context-Aware Chat with Diagnosis/Dosage Refusal Guards]
+```
+
+---
+
+## 🛡️ Clinical Safety & Regulatory Design
+
+1. **Non-Diagnostic Imperative:** The app never diagnoses, prescribes, or calculates an arbitrary "PCOS probability" without pelvic ultrasound confirmation.
+2. **Context Gate First:** Biological context strictly dictates clinical routing. Hysterectomy or natural/surgical menopause suppresses period tracking advice.
+3. **Escalation & Cancer Rule-Out:** Rapidly worsening virilizing symptoms or postmenopausal vaginal bleeding immediately trigger clinical evaluation alerts to exclude androgen-secreting tumors or endometrial hyperplasia.
+4. **Crisis Helplines:** If self-harm is indicated on PHQ-9 item 9, an un-dismissible emergency banner connects the patient to India's national crisis helpline (**Tele-MANAS: 14416**).
+5. **India DPDP Act 2023 Compliance:** Health data is never persisted without consent; zero third-party analytics; all inputs live in client React state; one-click `/v3/delete` endpoint.
+6. **Knowledge Base Verification Protocol:**
+   Evidence chunks in `backend/knowledge/chunks.json` must be human-verified by a clinician before the LLM explainer is permitted to cite them:
+   ```bash
+   python scripts/verify_chunks.py
+   ```
+   Only an authorized clinician may flip `"verified": true` in `chunks.json`. If no verified chunks exist or if generation violates safety bounds, the system automatically falls back to deterministic templates.
+
 
 ---
 

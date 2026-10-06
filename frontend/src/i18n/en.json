@@ -1,0 +1,237 @@
+{
+  "app_name": "MahilaSakhi",
+  "app_tagline": "AI-Assisted Context-Aware PCOS Care Navigation",
+  "disclaimer_short": "Educational guidance to prepare for a clinician visit. Not a medical diagnosis.",
+  "privacy_badge": "DPDP Act 2023 Compliant • Zero Raw Health Data Stored",
+  "delete_data": "Delete My Data",
+  "data_deleted_notice": "All session data has been deleted under DPDP Act 2023.",
+  "data_not_saved_notice": "Your answers live in browser memory only and are not saved on this device.",
+
+  "landing": {
+    "promise": "A personalised map of what matters most for YOUR PCOS.",
+    "sub_promise": "Because no two women have the same body, symptoms, or goals. Answer a few questions about your unique health context to get a structured roadmap for your next doctor visit.",
+    "what_we_collect": "What we ask about: your anatomical context, symptoms and daily impact, metabolic indicators, and wellbeing.",
+    "what_we_never_do": "What we never do: we never sell your data, never log raw health inputs, never prescribe medications, and never give automated diagnoses.",
+    "consent_checkbox": "I understand that MahilaSakhi provides educational guidance for doctor visits and does not replace medical care. I consent to proceed.",
+    "start_button": "Start Your Assessment"
+  },
+
+  "wizard": {
+    "step_of": "Step {{current}} of {{total}}",
+    "required_indicator": "* Required",
+    "optional_indicator": "(Optional)",
+    "not_sure": "Not sure",
+    "prefer_not_to_say": "Prefer not to say",
+    "back": "Back",
+    "next": "Continue",
+    "skip": "Skip this section",
+    "review_button": "Review My Answers",
+    "submit_button": "See My Care Map",
+
+    "steps": {
+      "context": "Health Context",
+      "symptoms": "Symptoms & Impact",
+      "metabolic": "Metabolic Health",
+      "wellbeing": "Wellbeing & Sleep",
+      "concern": "Main Concern",
+      "review": "Review Answers"
+    },
+
+    "context": {
+      "title": "Your Reproductive & Anatomical Context",
+      "subtitle": "Care navigation begins with understanding your unique body. We never assume every person has a cycle or uterus.",
+      "age_label": "Your age (years)",
+      "uterus_label": "Do you have a uterus?",
+      "uterus_yes": "Yes",
+      "uterus_no": "No (e.g. Hysterectomy)",
+      "ovaries_label": "What is your ovary status?",
+      "ovaries_both": "Both ovaries present",
+      "ovaries_one": "One ovary removed",
+      "ovaries_neither": "Both ovaries removed",
+      "menopause_label": "Menopause status",
+      "meno_none": "Premenopausal / natural cycle years",
+      "meno_peri": "Perimenopause (transition years)",
+      "meno_natural": "Natural menopause (12+ months since last period)",
+      "meno_surgical": "Surgical menopause",
+      "meno_age_label": "Age when menopause occurred (optional)",
+      "hormones_label": "Are you currently using hormonal medication?",
+      "contraception": "Hormonal birth control / oral contraceptives",
+      "hrt": "Hormone Replacement Therapy (HRT)",
+      "pregnancy_postpartum": "Currently pregnant or within 12 months postpartum",
+      "reproductive_goal_label": "What is your reproductive goal?",
+      "goal_not_interested": "Not interested in pregnancy",
+      "goal_later": "May want children in the future",
+      "goal_trying": "Currently trying to conceive",
+      "goal_concerns": "Concerned about future fertility"
+    },
+
+    "symptoms": {
+      "title": "Symptom Severity & Daily Impact",
+      "subtitle": "Select how noticeable each symptom is right now, and how much it affects your daily confidence or comfort.",
+      "impact_question": "How much does this affect your daily life or confidence?",
+      "impact_options": {
+        "none": "Not at all",
+        "a_little": "A little",
+        "quite_a_bit": "Quite a bit",
+        "a_lot": "A lot"
+      },
+      "facial_hair": {
+        "title": "Facial or body hair growth (Hirsutism)",
+        "desc": "Coarse hair appearing on chin, upper lip, chest, abdomen, or back.",
+        "none": "None",
+        "none_desc": "No excess coarse hair",
+        "mild": "Mild",
+        "mild_desc": "A few scattered, fine hairs",
+        "moderate": "Moderate",
+        "moderate_desc": "Requires regular tweezing, threading, or waxing",
+        "severe": "Severe",
+        "severe_desc": "Dense, widespread noticeable hair",
+        "rapidly_worsening": "Rapidly worsening ⚠️",
+        "rapidly_worsening_desc": "New or growing unusually fast"
+      },
+      "acne": {
+        "title": "Acne and persistent breakouts",
+        "desc": "Deep, painful, or hormonal pimples along the jawline, chin, or cheeks.",
+        "none": "None",
+        "none_desc": "Clear skin / rare blemishes",
+        "occasional": "Occasional",
+        "occasional_desc": "Occasional mild spots around your period",
+        "persistent": "Persistent",
+        "persistent_desc": "Ongoing breakouts along jawline or cheeks",
+        "severe": "Severe",
+        "severe_desc": "Widespread, deep, inflamed breakouts",
+        "scarring": "Scarring",
+        "scarring_desc": "Breakouts that leave permanent marks or scarring"
+      },
+      "hair_loss": {
+        "title": "Scalp hair thinning",
+        "desc": "Thinning on the crown or noticeable widening of your hair parting.",
+        "none": "None",
+        "none_desc": "Normal everyday shedding",
+        "mild": "Mild",
+        "mild_desc": "Slight widening at the hair parting",
+        "moderate": "Moderate",
+        "moderate_desc": "Noticeable thinning on top of scalp",
+        "severe": "Severe",
+        "severe_desc": "Significant, diffuse thinning across the scalp",
+        "progressive": "Progressive ⚠️",
+        "progressive_desc": "Rapid shedding or widening in recent months"
+      },
+      "menstrual": {
+        "title": "Menstrual cycle pattern",
+        "desc": "The spacing and predictability of your periods over the last 12 months.",
+        "regular": "Regular",
+        "regular_desc": "Every 21 to 35 days consistently",
+        "occasionally_irregular": "Occasionally irregular",
+        "occasionally_irregular_desc": "Varies by more than a week once in a while",
+        "frequently_irregular": "Frequently irregular",
+        "frequently_irregular_desc": "Cycles often exceed 35 days",
+        "very_infrequent": "Very infrequent",
+        "very_infrequent_desc": "Only a few periods a year (less than 6-8)",
+        "no_periods": "No periods",
+        "no_periods_desc": "Absent for 3 or more consecutive months",
+        "months_amenorrhea": "Number of months since your last period",
+        "hidden_notice": "Menstrual cycle questions are hidden because cycle tracking is not applicable to your anatomical context.",
+        "hormone_note": "Hormonal medication can mask your natural cycle, so bleeding is a weak signal for you."
+      }
+    },
+
+    "metabolic": {
+      "title": "Metabolic & Physical Health Indicators",
+      "subtitle": "PCOS is closely tied to insulin sensitivity and metabolic balance.",
+      "height_label": "Height (cm)",
+      "weight_label": "Weight (kg)",
+      "bmi_calculated": "Calculated BMI",
+      "bmi_note": "Asian-Pacific cutoff guidelines consider BMI ≥ 23 as an indicator for metabolic screening.",
+      "waist_label": "Waist circumference (cm, optional)",
+      "waist_hint": "Measure around your belly button. For Asian women, ≥ 80 cm is a common screening threshold.",
+      "indicators_title": "Check any that apply to you:",
+      "family_diabetes": "Family history of Type 2 Diabetes or heart disease",
+      "rapid_weight_gain": "Recent rapid or unexplained weight changes",
+      "skin_darkening": "Dark velvety patches of skin (e.g. neck, underarms)",
+      "known_glucose": "Previous lab test indicated elevated blood sugar / prediabetes",
+      "known_lipids": "Previous lab test indicated high cholesterol or triglycerides",
+      "labs_expander_title": "I have lab or ultrasound reports (Optional)",
+      "labs_hint": "Leave blank if you haven't had these tests. Ultrasound counts are only needed for clinical dataset resemblance comparison.",
+      "tsh": "TSH (mIU/L)",
+      "fsh": "FSH (mIU/mL)",
+      "lh": "LH (mIU/mL)",
+      "follicle_left": "Left Ovary Follicle Count",
+      "follicle_right": "Right Ovary Follicle Count"
+    },
+
+    "wellbeing": {
+      "title": "Emotional Wellbeing & Sleep",
+      "subtitle": "Hormonal health deeply influences mood, energy, and sleep. These screening modules are completely optional.",
+      "sleep_title": "Sleep quality and disruption",
+      "sleep_options": {
+        "0": "No sleep problems — rested and energized",
+        "1": "Mild trouble falling or staying asleep",
+        "2": "Moderate broken sleep or restless nights",
+        "3": "Severe difficulty sleeping or daytime exhaustion",
+        "4": "Chronic, exhausting sleep disruption"
+      },
+      "optional_mental_toggle": "Include validated PHQ-9 & GAD-7 emotional screening",
+      "phq_intro": "Over the last 2 weeks, how often have you been bothered by any of the following?",
+      "phq_scale_0": "Not at all",
+      "phq_scale_1": "Several days",
+      "phq_scale_2": "More than half the days",
+      "phq_scale_3": "Nearly every day",
+      "safety_alert_title": "Urgent Care & Support (Immediate Notice)",
+      "safety_alert_msg": "You indicated thoughts of hurting yourself. Please reach out to someone you trust or contact a crisis professional right now. In India, call the free 24/7 National Mental Health Helpline Tele-MANAS at 14416.",
+      "safety_alert_ack": "I have read and acknowledged this emergency support information"
+    },
+
+    "concern": {
+      "title": "What bothers you the most right now?",
+      "subtitle": "Choosing your chief concern helps our engine place the most relevant guidance at the very top of your care map.",
+      "concerns_list": {
+        "facial_hair": "Excess facial or body hair",
+        "acne": "Persistent acne & blemishes",
+        "hair_loss": "Scalp hair loss & thinning",
+        "irregular_periods": "Irregular or missed periods",
+        "weight_metabolic": "Weight challenges & metabolic health",
+        "fertility": "Trying to conceive or fertility worries",
+        "mood_stress": "Mood swings, anxiety, or stress",
+        "energy_fatigue": "Low energy & chronic fatigue",
+        "menopause_symptoms": "Hot flashes & menopause symptoms",
+        "sleep": "Poor sleep & unrestful nights"
+      },
+      "red_flags_title": "Clinical safety check (Check if currently experiencing):",
+      "flag_pain": "Sudden, severe, or worsening pelvic or abdominal pain",
+      "flag_heavy": "Heavy bleeding soaking through pads/tampons every hour",
+      "flag_postmeno_bleeding": "Any vaginal bleeding occurring after menopause"
+    },
+
+    "review": {
+      "title": "Review Your Answers",
+      "subtitle": "Confirm your answers before we generate your personalised care map. You can edit any section below.",
+      "edit": "Edit",
+      "section_context": "Anatomical Context",
+      "section_symptoms": "Symptoms & Impact",
+      "section_metabolic": "Metabolic Health",
+      "section_wellbeing": "Wellbeing & Sleep",
+      "section_concern": "Main Concern"
+    }
+  },
+
+  "care_map": {
+    "title": "Your Personalised PCOS Care Map",
+    "subtitle": "A structured, prioritized action plan to discuss with your healthcare provider.",
+    "restart": "Restart Assessment",
+    "export_pdf": "Download Visit-Prep PDF",
+    "tier_focus_now": "Focus Now",
+    "tier_monitor": "Keep An Eye On",
+    "tier_maintain": "Maintain",
+    "why_ranked": "Why this is here:",
+    "who_to_see": "Who to consult:",
+    "tests_to_ask": "Tests to discuss:",
+    "questions_for_doctor": "Questions to ask your doctor:",
+    "what_to_monitor": "What to monitor at home:",
+    "not_applicable_title": "Areas not applicable to you right now",
+    "chat_title": "Ask About Your Care Map",
+    "chat_subtitle": "Have questions about these recommendations? Our assistant explains them based on verified 2023 guidelines.",
+    "chat_placeholder": "Ask a question about your care plan...",
+    "chat_disclaimer": "The assistant explains guideline recommendations only. It cannot provide medical diagnoses or prescribe medications."
+  }
+}

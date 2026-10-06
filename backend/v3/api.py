@@ -1,4 +1,5 @@
-from flask import Blueprint, jsonify, request
+import io
+from flask import Blueprint, jsonify, request, send_file
 from pydantic import BaseModel, Field, ValidationError, ConfigDict
 from typing import Any, Dict, Optional
 from .context import derive_context
@@ -7,6 +8,7 @@ from .priority import prioritise
 from .pathways import PATHWAYS
 from .knowledge import retrieve, load_chunks
 from .explain import explain
+from .pdf import generate_visit_prep_pdf
 
 bp = Blueprint("v3", __name__, url_prefix="/v3")
 _llm_client = None   # set from app.py: v3.api._llm_client = client
@@ -71,3 +73,39 @@ def delete_user_data():
         "status": "success",
         "message": "User health data and assessment records deleted successfully in accordance with India DPDP Act 2023."
     }), 200
+
+
+@bp.route("/visit-prep-pdf", methods=["POST"])
+def export_visit_prep_pdf():
+    """
+    Generates a server-side single-page Visit-Prep consultation summary PDF.
+    Accepts JSON containing { result, profile } or { profile }.
+    """
+    try:
+        raw_json = request.get_json(force=True)
+    except Exception:
+        return jsonify({"error": "Invalid JSON body"}), 400
+
+    if not isinstance(raw_json, dict):
+        return jsonify({"error": "Request body must be a JSON object"}), 400
+
+    result = raw_json.get("result")
+    profile = raw_json.get("profile", {})
+
+    if not result:
+        # Generate result from profile if not explicitly provided
+        result = assess_profile(profile or raw_json)
+        if not profile:
+            profile = raw_json
+
+    try:
+        pdf_bytes = generate_visit_prep_pdf(result, profile)
+        return send_file(
+            io.BytesIO(pdf_bytes),
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name="MahilaSakhi_Visit_Prep.pdf"
+        )
+    except Exception as e:
+        return jsonify({"error": "Failed to generate visit-prep PDF", "details": str(e)}), 500
+

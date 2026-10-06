@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./App.css";
 import { t } from "./i18n";
-import { assessProfile, deleteUserData } from "./api/v3";
+import { assessProfile, deleteUserData, downloadVisitPrepPdf } from "./api/v3";
 import Landing from "./pages/Landing";
 import Wizard from "./pages/Wizard";
 import Review from "./pages/Review";
@@ -186,6 +186,18 @@ function App() {
     }
   };
 
+  const handleDownloadPdf = async () => {
+    try {
+      showToast(lang === "hi" ? "विज़िट-प्रेप PDF तैयार हो रही है..." : "Generating visit-prep PDF...");
+      await downloadVisitPrepPdf(assessmentResult, profile);
+      showToast(lang === "hi" ? "PDF सफलतापूर्वक डाउनलोड हो गई!" : "PDF downloaded successfully!");
+    } catch (err) {
+      console.error("PDF download failed:", err);
+      showToast(lang === "hi" ? "PDF डाउनलोड असफल हुई।" : "Failed to download PDF.");
+    }
+  };
+
+
   return (
     <div className="app-viewport">
       {/* Toast */}
@@ -293,6 +305,7 @@ function App() {
               setCurrentPage("landing");
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
+            onDownloadPdf={handleDownloadPdf}
             lang={lang}
           />
         )}

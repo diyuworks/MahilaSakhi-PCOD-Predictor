@@ -1,4 +1,4 @@
-import os
+import os, re
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
@@ -7,13 +7,27 @@ import pandas as pd
 from openai import OpenAI
 from rule_engine import screen_menopause, screen_endometriosis
 
+# Auto-load backend/.env if present
+_env_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+if os.path.exists(_env_file):
+    with open(_env_file, "r", encoding="utf-8") as _f:
+        for _line in _f:
+            _line = _line.strip()
+            if _line and not _line.startswith("#") and "=" in _line:
+                _k, _v = _line.split("=", 1)
+                os.environ.setdefault(_k.strip(), _v.strip().strip('"').strip("'"))
+
 # v3 engine imports
 from v3 import api as v3api
 from v3.clinical_mode import predict_clinical
 from v3.context import derive_context
+from v3.chat import handle_chat
+from limiter import limiter
 
 app = Flask(__name__)
 CORS(app)
+app.config['MAX_CONTENT_LENGTH'] = 20 * 1024
+limiter.init_app(app)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 v3_model_path = os.path.join(BASE_DIR, "..", "model", "pcod_clinical_v3.pkl")
@@ -71,22 +85,16 @@ FEATURE_DEFAULTS = {
     'TSH (mIU/L)': 2.5,
 }
 
-client = OpenAI(
-    base_url="https://integrate.api.nvidia.com/v1",
-    api_key=os.environ.get("NVIDIA_API_KEY") or "placeholder-key",
-)
+client = None
+if os.environ.get("NVIDIA_API_KEY"):
+    client = OpenAI(
+        base_url="https://integrate.api.nvidia.com/v1",
+        api_key=os.environ.get("NVIDIA_API_KEY"),
+    )
 
 # Register v3 engine blueprint and attach LLM client
 v3api._llm_client = client
 app.register_blueprint(v3api.bp)
-
-CHAT_SYSTEM_PROMPT = (
-    "You are MahilaSakhi's PCOD Care Assistant — an educational women's health "
-    "care navigator. Explain things simply based strictly on the provided assessment context. "
-    "You must NEVER diagnose medical conditions, prescribe medications, or recommend drug doses. "
-    "Always redirect diagnostic or prescription questions to a licensed clinician. "
-    "Keep replies concise (2-4 sentences) and supportive."
-)
 
 
 @app.route("/")
@@ -137,56 +145,22 @@ def predict_thyroid():
 
 
 @app.route('/chat', methods=['POST'])
+@limiter.limit("30/minute")
 def chat():
-    data = request.get_json(force=True) or {}
-    user_message = data.get("message", "").strip()
-    context = data.get("context", "")
+    result = handle_chat(request.get_json(force=True) or {}, client=client)
+    if result.get("status") == 400:
+        return jsonify({"error": result["error"]}), 400
+    return jsonify(result)
 
-    if not user_message:
-        return jsonify({"error": "message is required"}), 400
 
-    if not context or not str(context).strip():
-        return jsonify({"error": "context from v3 result is required"}), 400
+@app.errorhandler(413)
+def request_entity_too_large(error):
+    return jsonify({"error": "Request body too large (max 20 KB)"}), 413
 
-    # Safety gate: refuse dose, prescription, and direct diagnosis requests
-    lower_msg = user_message.lower()
-    refusal_keywords = [
-        "dose", "dosage", "how much", "mg", "prescription", "prescribe",
-        "tablet", "pills", "medication", "medicine",
-        "do i have pcos", "do i have pcod", "diagnose me", "diagnose",
-        "diagnosis", "am i diagnosed"
-    ]
-    if any(kw in lower_msg for kw in refusal_keywords):
-        return jsonify({
-            "reply": "I cannot provide a medical diagnosis or prescribe/recommend medication doses. "
-                     "MahilaSakhi is an educational care-navigation tool. Please consult a qualified "
-                     "doctor or clinician for diagnostic evaluation and prescription management."
-        }), 200
 
-    messages = [{"role": "system", "content": CHAT_SYSTEM_PROMPT}]
-    messages.append({
-        "role": "system",
-        "content": f"Context from the user's recent v3 assessment: {context}",
-    })
-    messages.append({"role": "user", "content": user_message})
-
-    if not os.environ.get("NVIDIA_API_KEY"):
-        return jsonify({
-            "reply": "AI Chatbot ke liye NVIDIA_API_KEY configure nahi hai. Aap prediction dashboard aur baaki sabhi health features bina key ke use kar sakte hain!"
-        })
-
-    try:
-        completion = client.chat.completions.create(
-            model="meta/llama-3.1-8b-instruct",
-            messages=messages,
-            temperature=0.2,
-            max_tokens=300,
-        )
-        reply = completion.choices[0].message.content.strip()
-        return jsonify({"reply": reply})
-    except Exception as e:
-        print(f"Chat error: {e}")
-        return jsonify({"reply": "Sorry, I'm having trouble responding right now. Please try again."}), 500
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return jsonify({"error": "Rate limit exceeded", "message": str(e.description)}), 429
 
 
 def _determine_urgency(pcos_probability, thyroid_probability, menopause_likelihood,

@@ -10,3 +10,4 @@ joblib
 pydantic
 reportlab
 pytest
+flask-limiter

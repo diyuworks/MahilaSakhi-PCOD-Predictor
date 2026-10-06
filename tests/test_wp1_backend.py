@@ -72,30 +72,54 @@ def test_screen_menopause_skipped_when_uterus_no(client):
     assert meno["applicable"] is False
 
 
-def test_chat_requires_context(client):
+def test_chat_requires_profile(client):
     payload = {"message": "Hello, how does diet affect PCOS?"}
     res = client.post("/chat", data=json.dumps(payload), content_type="application/json")
     assert res.status_code == 400
-    assert "context from v3 result is required" in res.get_json()["error"]
+    assert "profile is required" in res.get_json()["error"]
 
 
 def test_chat_refuses_dosage_and_diagnosis(client):
+    profile = {"age": 28, "context": {"uterus": "yes"}}
     # Test dose refusal
     payload = {
         "message": "What is the recommended dose of metformin for me?",
-        "context": "User has moderate androgen symptoms."
+        "profile": profile
     }
     res = client.post("/chat", data=json.dumps(payload), content_type="application/json")
     assert res.status_code == 200
-    reply = res.get_json()["reply"]
-    assert "cannot provide a medical diagnosis or prescribe" in reply.lower() or "clinician" in reply.lower()
+    data = res.get_json()
+    assert data["route"] == "safety"
+    assert "can't advise on medicines" in data["reply"].lower() or "cannot advise on medicines" in data["reply"].lower()
 
     # Test diagnosis refusal
     payload2 = {
         "message": "Do I have PCOS?",
-        "context": "User has moderate androgen symptoms."
+        "profile": profile
     }
     res2 = client.post("/chat", data=json.dumps(payload2), content_type="application/json")
     assert res2.status_code == 200
-    reply2 = res2.get_json()["reply"]
-    assert "cannot provide a medical diagnosis" in reply2.lower()
+    data2 = res2.get_json()
+    assert data2["route"] == "safety"
+    assert "can't diagnose pcos" in data2["reply"].lower()
+
+
+def test_assess_with_null_wellbeing_totals(client):
+    """When mental module is skipped, phq9_total/gad7_total are null, not 0."""
+    payload = {
+        "age": 27,
+        "context": {"uterus": "yes"},
+        "wellbeing": {
+            "phq9_total": None,
+            "phq9_item9": None,
+            "gad7_total": None,
+            "sleep_problem_0_4": 1
+        }
+    }
+    res = client.post("/v3/assess", data=json.dumps(payload), content_type="application/json")
+    assert res.status_code == 200
+    data = res.get_json()
+    mental_domain = [d for d in data["priority"]["ranked_domains"] if d["domain"] == "mental"][0]
+    assert mental_domain["severity"] == 0
+    assert mental_domain["tier"] == "maintain"
+

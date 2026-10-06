@@ -1,6 +1,6 @@
 """LLM explains ONLY structured results + retrieved verified chunks. Anything else -> fallback."""
-import json, re
-from typing import Any, Dict, List
+import json, os, re
+from typing import Any, Dict, List, Optional
 
 SYSTEM = (
     "You are MahilaSakhi's care-navigation explainer. You EXPLAIN a structured assessment in warm, "
@@ -24,7 +24,9 @@ def fallback(result: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def explain(result: Dict[str, Any], chunks_by_domain: Dict[str, List[Dict[str, Any]]],
-            client=None, model: str = "meta/llama-3.1-8b-instruct") -> Dict[str, Any]:
+            client=None, model: Optional[str] = None) -> Dict[str, Any]:
+    if model is None:
+        model = os.environ.get("LLM_MODEL", "meta/llama-3.1-8b-instruct")
     allowed = {c["id"] for cs in chunks_by_domain.values() for c in cs}
     if client is None or not allowed:       # no verified evidence -> never free-generate
         return fallback(result)

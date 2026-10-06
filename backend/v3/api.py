@@ -10,6 +10,11 @@ from .knowledge import retrieve, load_chunks
 from .explain import explain
 from .pdf import generate_visit_prep_pdf
 
+try:
+    from limiter import limiter
+except (ImportError, ValueError):
+    from ..limiter import limiter
+
 bp = Blueprint("v3", __name__, url_prefix="/v3")
 _llm_client = None   # set from app.py: v3.api._llm_client = client
 
@@ -40,6 +45,7 @@ def assess_profile(profile: dict) -> dict:
 
 
 @bp.route("/assess", methods=["POST"])
+@limiter.limit("10/minute")
 def assess():
     try:
         raw_json = request.get_json(force=True)

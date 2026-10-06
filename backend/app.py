@@ -16,8 +16,13 @@ app = Flask(__name__)
 CORS(app)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-model_path = os.path.join(BASE_DIR, "..", "model", "pcod_model_v2.pkl")
-features_path = os.path.join(BASE_DIR, "..", "model", "pcod_features_v2.pkl")
+v3_model_path = os.path.join(BASE_DIR, "..", "model", "pcod_clinical_v3.pkl")
+v2_model_path = os.path.join(BASE_DIR, "..", "model", "pcod_model_v2.pkl")
+model_path = v3_model_path if os.path.exists(v3_model_path) else v2_model_path
+
+v3_features_path = os.path.join(BASE_DIR, "..", "model", "pcod_features_v3.pkl")
+v2_features_path = os.path.join(BASE_DIR, "..", "model", "pcod_features_v2.pkl")
+features_path = v3_features_path if os.path.exists(v3_features_path) else v2_features_path
 
 model = joblib.load(model_path)
 FEATURE_NAMES = joblib.load(features_path)

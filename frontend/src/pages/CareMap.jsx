@@ -6,6 +6,7 @@ import ChatPanel from "../components/ChatPanel";
 
 export default function CareMap({
   assessmentResult,
+  profile,
   onRestart,
   lang = "en",
   onDownloadPdf = null,
@@ -42,7 +43,6 @@ export default function CareMap({
       {/* Header action row */}
       <div className="caremap-header-action card">
         <div className="caremap-header-text">
-          <div className="flower-icon-brand" aria-hidden="true">🌸</div>
           <div>
             <h2 className="caremap-main-title">{t("care_map.title", lang)}</h2>
             <p className="card-subtitle">{t("care_map.subtitle", lang)}</p>
@@ -51,11 +51,11 @@ export default function CareMap({
 
         <div className="caremap-header-btns">
           <button type="button" className="btn-secondary" onClick={onRestart}>
-            🔄 {t("care_map.restart", lang)}
+            {t("care_map.restart", lang)}
           </button>
           {onDownloadPdf && (
             <button type="button" className="btn-primary btn-export-pdf" onClick={onDownloadPdf}>
-              📄 {t("care_map.export_pdf", lang)}
+              {t("care_map.export_pdf", lang)}
             </button>
           )}
         </div>
@@ -71,7 +71,7 @@ export default function CareMap({
       {/* Structured Guideline Summary */}
       {explanation && (
         <div className="caremap-summary-box card">
-          <h3 className="summary-title">📖 {lang === "hi" ? "दिशानिर्देश सारांश" : "Clinical Navigation Summary"}</h3>
+          <h3 className="summary-title">{lang === "hi" ? "दिशानिर्देश सारांश" : "Clinical Navigation Summary"}</h3>
           <p className="summary-text">{explanation.summary}</p>
           {explanation.retrieved_chunks?.length > 0 && (
             <div className="verified-citations-note">
@@ -87,7 +87,7 @@ export default function CareMap({
       {/* Horizontal Severity Bars (Replaces old chart with text values, never color alone) */}
       <div className="domain-bars-visualizer card" role="region" aria-label="Domain Severity Visualizer">
         <h3 className="section-title">
-          📊 {lang === "hi" ? "स्वास्थ्य क्षेत्र गंभीरता प्रोफाइल" : "Domain Severity Profile"}
+          {lang === "hi" ? "स्वास्थ्य क्षेत्र गंभीरता प्रोफाइल" : "Domain Severity Profile"}
         </h3>
         <p className="card-subtitle">
           {lang === "hi"
@@ -132,7 +132,7 @@ export default function CareMap({
       {/* Ranked Domain Cards */}
       <div className="domain-cards-list-section">
         <h3 className="section-title">
-          🎯 {lang === "hi" ? "प्राथमिकता के अनुसार केयर डोमेन" : "Prioritized Care Pathway Cards"}
+          {lang === "hi" ? "प्राथमिकता के अनुसार केयर डोमेन" : "Prioritized Care Pathway Cards"}
         </h3>
         <div className="domain-cards-stack">
           {rankedDomains.map((domainItem, index) => (
@@ -158,7 +158,7 @@ export default function CareMap({
             onClick={() => setShowNotApplicable(!showNotApplicable)}
             aria-expanded={showNotApplicable}
           >
-            ℹ️ {t("care_map.not_applicable_title", lang)} ({hiddenDomains.length}) {showNotApplicable ? "▲" : "▼"}
+            {t("care_map.not_applicable_title", lang)} ({hiddenDomains.length}) {showNotApplicable ? "▲" : "▼"}
           </button>
 
           {showNotApplicable && (
@@ -183,13 +183,13 @@ export default function CareMap({
         </div>
       )}
 
-      {/* Embedded Chat Assistant Panel */}
-      <ChatPanel assessmentResult={assessmentResult} lang={lang} />
+      {/* Floating Right-Side AI Chatbot */}
+      <ChatPanel assessmentResult={assessmentResult} profile={profile} lang={lang} />
 
       {/* Persistent Footer Disclaimer */}
       <footer className="caremap-footer-disclaimer">
         <p>
-          ⚖️ <strong>{t("disclaimer_short", lang)}</strong>
+          <strong>{t("disclaimer_short", lang)}</strong>
         </p>
         <p>
           <small>

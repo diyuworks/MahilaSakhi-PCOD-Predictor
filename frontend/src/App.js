@@ -70,6 +70,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState("landing"); // landing | wizard | review | care_map
   const [wizardJumpStep, setWizardJumpStep] = useState(1);
   const [profile, setProfile] = useState(createEmptyProfile());
+  const [assessedProfile, setAssessedProfile] = useState(null);
   const [assessmentResult, setAssessmentResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorNotice, setErrorNotice] = useState(null);
@@ -98,6 +99,7 @@ function App() {
     }
 
     setProfile(createEmptyProfile());
+    setAssessedProfile(null);
     setAssessmentResult(null);
     setCurrentPage("landing");
     showToast(t("data_deleted_notice", lang));
@@ -156,10 +158,22 @@ function App() {
         "Follicle No. (R)": profile.metabolic?.["Follicle No. (R)"] ? Number(profile.metabolic["Follicle No. (R)"]) : null,
       },
       wellbeing: {
-        phq9_total: Number(profile.wellbeing?.phq9_total) || 0,
-        phq9_item9: Number(profile.wellbeing?.phq9_item9) || 0,
-        gad7_total: Number(profile.wellbeing?.gad7_total) || 0,
-        sleep_problem_0_4: Number(profile.wellbeing?.sleep_problem_0_4) || 0,
+        phq9_total:
+          profile.wellbeing?.include_mental_scales && profile.wellbeing?.phq9_total !== undefined && profile.wellbeing?.phq9_total !== null
+            ? Number(profile.wellbeing.phq9_total)
+            : null,
+        phq9_item9:
+          profile.wellbeing?.include_mental_scales && profile.wellbeing?.phq9_item9 !== undefined && profile.wellbeing?.phq9_item9 !== null
+            ? Number(profile.wellbeing.phq9_item9)
+            : null,
+        gad7_total:
+          profile.wellbeing?.include_mental_scales && profile.wellbeing?.gad7_total !== undefined && profile.wellbeing?.gad7_total !== null
+            ? Number(profile.wellbeing.gad7_total)
+            : null,
+        sleep_problem_0_4:
+          profile.wellbeing?.sleep_problem_0_4 !== undefined && profile.wellbeing?.sleep_problem_0_4 !== null
+            ? Number(profile.wellbeing.sleep_problem_0_4)
+            : 0,
       },
       red_flags: {
         sudden_severe_pain: Boolean(profile.red_flags?.sudden_severe_pain),
@@ -170,6 +184,7 @@ function App() {
     };
 
     try {
+      setAssessedProfile(payload);
       const resultData = await assessProfile(payload);
       setAssessmentResult(resultData);
       setCurrentPage("care_map");
@@ -203,14 +218,14 @@ function App() {
       {/* Toast */}
       {toastMessage && (
         <div className="toast-banner" role="status" aria-live="polite">
-          ✓ {toastMessage}
+          {toastMessage}
         </div>
       )}
 
       {/* Global Navigation Header */}
       <header className="global-nav-header">
         <div className="header-brand-container">
-          <div className="header-logo-badge" aria-hidden="true">🌸</div>
+          <div className="header-logo-badge" aria-hidden="true">MS</div>
           <div>
             <h1 className="header-brand-name">{t("app_name", lang)}</h1>
             <p className="header-brand-tagline">{t("app_tagline", lang)}</p>
@@ -225,23 +240,23 @@ function App() {
             onClick={handleDeleteData}
             title={t("delete_data", lang)}
           >
-            🗑️ {t("delete_data", lang)}
+            {t("delete_data", lang)}
           </button>
         </div>
       </header>
 
       {/* Persistent Security Ribbon */}
       <div className="security-top-ribbon">
-        <span>🛡️ {t("privacy_badge", lang)}</span>
+        <span>{t("privacy_badge", lang)}</span>
         <span className="dot">•</span>
-        <span>⚖️ {t("disclaimer_short", lang)}</span>
+        <span>{t("disclaimer_short", lang)}</span>
       </div>
 
       {/* Main Pages Switch */}
       <main className="main-viewport-content">
         {errorNotice && (
           <div className="global-error-card card" role="alert">
-            <p>⚠️ {errorNotice}</p>
+            <p>{errorNotice}</p>
             <button type="button" className="btn-secondary" onClick={() => setErrorNotice(null)}>
               Dismiss
             </button>
@@ -299,8 +314,10 @@ function App() {
         {currentPage === "care_map" && (
           <CareMap
             assessmentResult={assessmentResult}
+            profile={assessedProfile || profile}
             onRestart={() => {
               setProfile(createEmptyProfile());
+              setAssessedProfile(null);
               setAssessmentResult(null);
               setCurrentPage("landing");
               window.scrollTo({ top: 0, behavior: "smooth" });

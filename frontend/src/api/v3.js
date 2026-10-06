@@ -22,11 +22,28 @@ export async function deleteUserData() {
   return response.json();
 }
 
-export async function sendChatMessage(message, context) {
+export async function sendChatMessage(payloadOrMessage, profile, lang = "en", history = []) {
+  let body;
+  if (typeof payloadOrMessage === "object" && payloadOrMessage !== null) {
+    body = {
+      message: payloadOrMessage.message,
+      profile: payloadOrMessage.profile,
+      lang: payloadOrMessage.lang || "en",
+      history: payloadOrMessage.history || [],
+    };
+  } else {
+    body = {
+      message: payloadOrMessage,
+      profile: profile || {},
+      lang: lang || "en",
+      history: history || [],
+    };
+  }
+
   const response = await fetch(`${API_BASE}/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message, context }),
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {

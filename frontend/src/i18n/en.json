@@ -86,7 +86,7 @@
         "moderate_desc": "Requires regular tweezing, threading, or waxing",
         "severe": "Severe",
         "severe_desc": "Dense, widespread noticeable hair",
-        "rapidly_worsening": "Rapidly worsening ⚠️",
+        "rapidly_worsening": "Rapidly worsening",
         "rapidly_worsening_desc": "New or growing unusually fast"
       },
       "acne": {
@@ -114,7 +114,7 @@
         "moderate_desc": "Noticeable thinning on top of scalp",
         "severe": "Severe",
         "severe_desc": "Significant, diffuse thinning across the scalp",
-        "progressive": "Progressive ⚠️",
+        "progressive": "Progressive",
         "progressive_desc": "Rapid shedding or widening in recent months"
       },
       "menstrual": {
@@ -232,6 +232,22 @@
     "chat_title": "Ask About Your Care Map",
     "chat_subtitle": "Have questions about these recommendations? Our assistant explains them based on verified 2023 guidelines.",
     "chat_placeholder": "Ask a question about your care plan...",
-    "chat_disclaimer": "The assistant explains guideline recommendations only. It cannot provide medical diagnoses or prescribe medications."
+    "chat_disclaimer": "The assistant explains guideline recommendations only. It cannot provide medical diagnoses or prescribe medications.",
+    "chat_chips": [
+      "What should I ask my doctor first?",
+      "Why is this my top priority?",
+      "What lifestyle habits support my main concern?"
+    ],
+    "chat_routes": {
+      "deterministic": "From your Care Map",
+      "grounded": "Based on guideline excerpts",
+      "fallback": "Not enough verified info; here's what to ask your doctor",
+      "sources": "Sources"
+    },
+    "chat_not_diagnosis": "Not a diagnosis • Educational guidance for doctor visits",
+    "chat_still_working": "Still working...",
+    "chat_retry": "Retry",
+    "call_tele_manas": "Call Tele-MANAS: 14416 (24x7 Free)",
+    "call_emergency": "Emergency: 112"
   }
 }

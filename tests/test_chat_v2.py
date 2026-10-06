@@ -100,15 +100,18 @@ def test_grounded_accepts_valid_cites():
     assert r["route"] == "grounded" and r["cites"] == ["X-1"]
 
 
-def test_grounded_rejects_bad_cites_dose_and_nojson():
-    for bad in [
-        json.dumps({"answer": "ok", "cites": ["NOPE"]}),
-        json.dumps({"answer": "take metformin 500 mg", "cites": ["X-1"]}),
-        "not json",
-        json.dumps({"answer": "ok", "cites": []}),
-    ]:
-        r = handle_chat({"message": "tell me about unwanted hair options", "profile": PROFILE}, client=fake(bad), chunks=CH)
-        assert r["route"] == "fallback"
+@pytest.mark.parametrize("bad_output", [
+    json.dumps({"answer": "You can try laser treatment.", "cites": ["INVENTED-CHUNK-999"]}),  # invented cite
+    json.dumps({"answer": "You should take metformin 500 mg daily.", "cites": ["X-1"]}),     # dose mentioned
+    json.dumps({"answer": "Based on this, you have PCOS definitely.", "cites": ["X-1"]}),     # you have PCOS
+    json.dumps({"answer": "General advice without citation.", "cites": []}),                  # empty cites
+    "This is completely raw text and not valid json",                                          # invalid JSON
+    json.dumps({"answer": "word " * 160, "cites": ["X-1"]}),                                   # over-long answer (> MAX_WORDS + 20)
+])
+def test_grounded_safety_guards_fall_back_on_violations(bad_output):
+    r = handle_chat({"message": "tell me about unwanted hair options", "profile": PROFILE}, client=fake(bad_output), chunks=CH)
+    assert r["route"] == "fallback"
+    assert "cites" in r and r["cites"] == []
 
 
 def test_limits_and_validation():

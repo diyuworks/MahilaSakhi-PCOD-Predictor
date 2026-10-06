@@ -38,6 +38,10 @@ jobs:
         run: |
           python -m pytest tests -v
 
+      - name: Run Chat v2 Golden Eval Suite
+        run: |
+          python scripts/run_chat_eval.py
+
   frontend-tests:
     name: Frontend React Tests & Build
     runs-on: ubuntu-latest

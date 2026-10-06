@@ -6,7 +6,7 @@ import unicodedata
 
 CRISIS = [
     r"kill myself", r"end my life", r"want to die", r"wanna die", r"don'?t want to (live|be alive)",
-    r"suicid", r"hurt myself", r"self[- ]?harm", r"no reason to live", r"better off dead",
+    r"suicid", r"hurt\w*\s+myself", r"self[- ]?harm\w*", r"no reason to live", r"better off dead",
     r"jeene ka (mann|man|mood) nahi", r"jeena nahi chah", r"marna chah", r"mar jana chah", r"mar jaun",
     r"khud ko (khatam|nuksan|hurt)", r"zindagi khatam", r"aatmahatya", r"suicide karn",
     "मरना चाह", "मर जाना चाह", "जीने का मन नहीं", "जीना नहीं चाह", "आत्महत्या", "खुद को खत्म", "खुद को नुकसान",
@@ -18,6 +18,7 @@ DOSE = [
 ]
 DIAGNOSE = [
     r"do i have (pcos|pcod)", r"am i (suffering|diagnosed)", r"kya mujhe (pcos|pcod)", r"mujhe (pcos|pcod) hai (kya|na)",
+    r"(pcos|pcod).*(suffer\w*|diagnos\w*)", r"(suffer\w*|diagnos\w*).*(pcos|pcod)",
     "क्या मुझे (पीसीओएस|पीसीओडी)", r"\bdiagnos\w*"
 ]
 

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { t } from "../i18n";
 import RedFlagBanner from "../components/RedFlagBanner";
 import DomainCard from "../components/DomainCard";
-import ChatPanel from "../components/ChatPanel";
 
 export default function CareMap({
   assessmentResult,
@@ -183,8 +182,6 @@ export default function CareMap({
         </div>
       )}
 
-      {/* Floating Right-Side AI Chatbot */}
-      <ChatPanel assessmentResult={assessmentResult} profile={profile} lang={lang} />
 
       {/* Persistent Footer Disclaimer */}
       <footer className="caremap-footer-disclaimer">

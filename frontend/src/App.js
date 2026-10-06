@@ -7,6 +7,7 @@ import Wizard from "./pages/Wizard";
 import Review from "./pages/Review";
 import CareMap from "./pages/CareMap";
 import LanguageToggle from "./components/LanguageToggle";
+import ChatPanel from "./components/ChatPanel";
 
 const createEmptyProfile = () => ({
   age: "",
@@ -327,6 +328,14 @@ function App() {
           />
         )}
       </main>
+
+      {/* Globally Persistent AI Chatbot */}
+      <ChatPanel
+        assessmentResult={assessmentResult}
+        profile={assessedProfile || profile}
+        lang={lang}
+        defaultOpen={true}
+      />
     </div>
   );
 }

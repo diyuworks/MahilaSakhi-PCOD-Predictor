@@ -1,20 +1,17 @@
 # TASK FOR AGENT: Upgrade MahilaSakhi into a context-aware PCOS care-navigation product (v3)
 
-## STEP 0: SETUP (do this before anything else)
-You were given two things: (a) the original MahilaSakhi project, and (b) `mahilasakhi_v3_starter.zip` (top-level folder `pkg/`).
-1. Extract the starter zip. Copy its contents into the ROOT of the original project, merging folders:
-   `pkg/backend/v3/` -> `backend/v3/`, `pkg/backend/knowledge/` -> `backend/knowledge/`, `pkg/ml/` -> `ml/`,
-   `pkg/tests/` -> `tests/`, `pkg/requirements.txt` -> merge into `backend/requirements.txt` (union, no duplicates),
-   `pkg/sample_request.json` and `pkg/README.md` -> project root (rename README to `README_v3_starter.md` if a README exists).
-   Do NOT overwrite existing `backend/app.py` or `backend/rule_engine.py`; edit them in place later (WP1).
-2. Confirm these exist: `backend/app.py`, `backend/rule_engine.py`, `frontend/src/App.js`,
-   `dataset/PCOS_data_without_infertility.xlsx`, and `model/pcod_model_v2.pkl`, `model/pcod_features_v2.pkl`,
-   `model/thyroid_model_v1.pkl`, `model/thyroid_features_v1.pkl`, `model/thyroid_defaults_v1.pkl`.
-   If the `model/` folder is missing, STOP and ask me for it. Do not invent or retrain silently to replace it.
-3. Never commit or read `node_modules/`, `frontend/build/`, `__pycache__/`, or `*.bak` files. Run `npm install` yourself.
-   Create `.gitignore` entries for them if missing. API keys come only from env vars (`NVIDIA_API_KEY`); never hardcode.
-4. Run `pip install -r backend/requirements.txt` then `python -m pytest tests -q`. All 11 starter tests must pass
-   before you start WP1. If they fail, fix the merge first.
+## STEP 0: PROJECT STATE (read first)
+This repo already has the v3 starter merged in (`backend/v3/`, `backend/knowledge/`, `ml/`, `tests/`) and the `model/` folder.
+**WP1 (backend wiring) is already DONE**: v3 blueprint registered, `/predict` uses `predict_clinical`, `/chat` requires v3
+context and runs at temperature 0.2. Do not redo it. Verify instead:
+1. `pip install -r backend/requirements.txt` then `python -m pytest tests -q`. All 18 tests must pass before you continue.
+   If anything fails, fix that first and tell me.
+2. Skim `backend/app.py`, `backend/v3/*`, and `frontend/src/App.js` (still the OLD single-form UI; the frontend work is WP2/WP3).
+3. Never commit or read `node_modules/`, `frontend/build/`, `__pycache__/`, `.pytest_cache/`, `*.bak`, or the stray nested
+   `mahilasakhi/` copy if it exists. Run `npm install` yourself. API keys only from env vars (`NVIDIA_API_KEY`).
+4. START AT WP2 (onboarding wizard), then continue in order. WP1 extras (`/v3/delete`, pydantic validation) already exist;
+   just confirm they work and that `/screen` skips `screen_menopause` when the context gate says cycle tracking is not
+   applicable (fix it only if it doesn't).
 
 ## HOW TO WORK
 - Work package by package (WP1 -> WP7). After EACH package: run tests, then post a short summary (what changed, files

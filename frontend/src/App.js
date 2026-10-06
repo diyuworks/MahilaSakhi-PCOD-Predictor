@@ -1,504 +1,418 @@
 import React, { useState } from "react";
-import { Bar } from "react-chartjs-2";
-import {
-Chart as ChartJS,
-BarElement,
-CategoryScale,
-LinearScale,
-Tooltip,
-Legend
-} from "chart.js";
+import "./App.css";
+import OnboardingWizard from "./components/OnboardingWizard";
+import { translations } from "./translations";
 
-ChartJS.register(
-BarElement,
-CategoryScale,
-LinearScale,
-Tooltip,
-Legend
-);
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
-function App(){
+function App() {
+  const [lang, setLang] = useState("en");
+  const [loading, setLoading] = useState(false);
+  const [assessmentResult, setAssessmentResult] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [notification, setNotification] = useState(null);
 
-const [age,setAge]=useState("");
-const [weight,setWeight]=useState("");
-const [bmi,setBmi]=useState("");
-const [fsh,setFsh]=useState("");
+  // Chat with assistant state
+  const [chatMessage, setChatMessage] = useState("");
+  const [chatHistory, setChatHistory] = useState([]);
+  const [chatLoading, setChatLoading] = useState(false);
 
-const [weightGain,setWeightGain]=useState(0);
-const [cycleIrregular,setCycleIrregular]=useState(0);
-const [hairGrowth,setHairGrowth]=useState(0);
-const [pimples,setPimples]=useState(0);
-const [skinDarkening,setSkinDarkening]=useState(0);
-const [exercise,setExercise]=useState(0);
+  const t = translations[lang] || translations.en;
 
-const [result,setResult]=useState("");
+  const showNotification = (msg) => {
+    setNotification(msg);
+    setTimeout(() => setNotification(null), 5000);
+  };
 
-const [chat,setChat]=useState([]);
-const [message,setMessage]=useState("");
+  const handleAssessmentComplete = async (profilePayload) => {
+    setLoading(true);
+    setErrorMsg(null);
+    try {
+      const res = await fetch(`${API_BASE}/v3/assess`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(profilePayload),
+      });
 
-const predictPCOD = async ()=>{
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Server responded with status ${res.status}`);
+      }
 
-try{
+      const data = await res.json();
+      setAssessmentResult(data);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      console.error("Assessment error:", err);
+      setErrorMsg(
+        lang === "hi"
+          ? "मूल्यांकन प्राप्त करने में त्रुटि हुई। कृपया सुनिश्चित करें कि बैकएंड सर्वर सक्रिय है।"
+          : `Failed to complete assessment: ${err.message}. Please ensure the backend is running.`
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const features=[
-Number(age),
-Number(weight),
-Number(bmi),
-Number(weightGain),
-Number(cycleIrregular),
-Number(hairGrowth),
-Number(pimples),
-Number(skinDarkening),
-Number(fsh),
-Number(exercise)
-];
+  const handleDeleteData = async () => {
+    if (
+      !window.confirm(
+        lang === "hi"
+          ? "क्या आप अपना सारा स्वास्थ्य डेटा हटाना चाहती हैं? यह DPDP अधिनियम के तहत स्थायी होगा।"
+          : "Are you sure you want to delete all session data under DPDP Act 2023?"
+      )
+    ) {
+      return;
+    }
 
-const response = await fetch("https://mahilasakhi-pcod-predictor-8.onrender.com/predict",{
-method:"POST",
-headers:{ "Content-Type":"application/json"},
-body:JSON.stringify({features})
-});
+    try {
+      await fetch(`${API_BASE}/v3/delete`, { method: "DELETE" }).catch(() => {});
+    } catch (e) {
+      // ignore network errors for local purge
+    }
 
-const data = await response.json();
+    setAssessmentResult(null);
+    setChatHistory([]);
+    showNotification(t.dataDeletedMsg);
+  };
 
-setResult(data.prediction || "No prediction");
+  const handleSendChat = async (e) => {
+    e.preventDefault();
+    if (!chatMessage.trim() || chatLoading) return;
 
-}catch(error){
+    const userText = chatMessage.trim();
+    const newHistory = [...chatHistory, { sender: "user", text: userText }];
+    setChatHistory(newHistory);
+    setChatMessage("");
+    setChatLoading(true);
 
-console.error(error);
-setResult("Server error");
+    try {
+      // Build context string from assessmentResult
+      const contextSummary = assessmentResult
+        ? `Primary concern: ${assessmentResult.priority?.ranked_domains?.[0]?.domain || "general"}. Urgency: ${
+            assessmentResult.priority?.overall_urgency
+          }. Context: ${JSON.stringify(assessmentResult.context)}`
+        : "User is exploring PCOS care guidance.";
 
+      const res = await fetch(`${API_BASE}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: userText,
+          context: contextSummary,
+        }),
+      });
+
+      const data = await res.json();
+      setChatHistory([
+        ...newHistory,
+        { sender: "assistant", text: data.reply || "Unable to retrieve response." },
+      ]);
+    } catch (err) {
+      setChatHistory([
+        ...newHistory,
+        {
+          sender: "assistant",
+          text:
+            lang === "hi"
+              ? "सहायक से संपर्क नहीं हो पाया। कृपया पुनः प्रयास करें।"
+              : "Unable to connect to assistant right now. Please try again.",
+        },
+      ]);
+    } finally {
+      setChatLoading(false);
+    }
+  };
+
+  return (
+    <div className="app-shell">
+      {/* Global Toast Notification */}
+      {notification && (
+        <div className="toast-notification" role="status">
+          ✓ {notification}
+        </div>
+      )}
+
+      {/* Main App Header */}
+      <header className="app-header">
+        <div className="header-brand">
+          <div className="brand-logo-circle">🌸</div>
+          <div>
+            <h1 className="brand-title">{t.appTitle}</h1>
+            <p className="brand-subtitle">{t.appSubtitle}</p>
+          </div>
+        </div>
+
+        <div className="header-actions">
+          <button
+            type="button"
+            className="btn-lang-toggle"
+            onClick={() => setLang(lang === "en" ? "hi" : "en")}
+            title="Toggle Language / भाषा बदलें"
+          >
+            🌐 {t.langToggle}
+          </button>
+          <button
+            type="button"
+            className="btn-delete-data"
+            onClick={handleDeleteData}
+            title="India DPDP Act 2023 Data Purge"
+          >
+            🗑️ {t.deleteData}
+          </button>
+        </div>
+      </header>
+
+      {/* Security & Disclaimer Top Ribbon */}
+      <div className="security-ribbon">
+        <span>🔒 DPDP Act 2023 Compliant</span>
+        <span className="dot">•</span>
+        <span>{t.disclaimerBadge}</span>
+      </div>
+
+      {/* Main Content Area */}
+      <main className="app-main-content">
+        {loading && (
+          <div className="loading-state-card card">
+            <div className="spinner" />
+            <h3>
+              {lang === "hi"
+                ? "आपके स्वास्थ्य डेटा का विश्लेषण हो रहा है..."
+                : "Synthesizing your clinical care pathway..."}
+            </h3>
+            <p>
+              {lang === "hi"
+                ? "दिशानिर्देशों और संदर्भ के अनुसार प्राथमिकताएं तय की जा रही हैं।"
+                : "Grounded in International 2023 PCOS Guidelines & Context Gating."}
+            </p>
+          </div>
+        )}
+
+        {errorMsg && (
+          <div className="error-state-card card" role="alert">
+            <div className="error-icon">⚠️</div>
+            <div>
+              <h4>{lang === "hi" ? "त्रुटि" : "Assessment Error"}</h4>
+              <p>{errorMsg}</p>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => setErrorMsg(null)}
+              >
+                {lang === "hi" ? "पुनः प्रयास करें" : "Try Again"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!loading && !assessmentResult && (
+          <OnboardingWizard
+            lang={lang}
+            onComplete={handleAssessmentComplete}
+            onDeleteData={handleDeleteData}
+          />
+        )}
+
+        {/* Assessment Care Map Result View */}
+        {!loading && assessmentResult && (
+          <div className="care-map-view">
+            <div className="care-map-header card">
+              <div className="care-map-title-row">
+                <h2>
+                  {lang === "hi"
+                    ? "🌸 आपका व्यक्तिगत पीसीओडी केयर मैप"
+                    : "🌸 Your Personalised PCOS Care Map"}
+                </h2>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => setAssessmentResult(null)}
+                >
+                  🔄 {t.restart}
+                </button>
+              </div>
+
+              {/* Red-flag banner at top */}
+              {assessmentResult.red_flags?.length > 0 && (
+                <div
+                  className={`urgency-alert-banner urgency-${assessmentResult.priority?.overall_urgency}`}
+                >
+                  <div className="alert-icon">⚠️</div>
+                  <div>
+                    <h4>
+                      {assessmentResult.priority?.overall_urgency === "today"
+                        ? "Urgent Care Recommended (Today)"
+                        : assessmentResult.priority?.overall_urgency === "this_week"
+                        ? "Clinical Evaluation Recommended (This Week)"
+                        : "Follow-up Recommended (4-6 Weeks)"}
+                    </h4>
+                    <ul>
+                      {assessmentResult.red_flags.map((flag, idx) => (
+                        <li key={idx}>{flag.message}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {/* LLM / Guideline Explanation */}
+              {assessmentResult.explanation && (
+                <div className="explanation-section">
+                  <h3>
+                    {lang === "hi" ? "📖 नैदानिक मार्गदर्शन सारांश" : "📖 Care Summary"}
+                  </h3>
+                  <div className="explanation-bubble">
+                    <p>{assessmentResult.explanation.summary}</p>
+                    {assessmentResult.explanation.retrieved_chunks?.length > 0 && (
+                      <div className="citations-list">
+                        <small>
+                          <strong>Verified Guidelines Cited:</strong>{" "}
+                          {assessmentResult.explanation.retrieved_chunks.join(", ")}
+                        </small>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Ranked Domain Cards */}
+            <div className="domain-cards-grid">
+              {assessmentResult.priority?.ranked_domains?.map((domainItem, idx) => {
+                const pathway = assessmentResult.pathway?.[domainItem.domain];
+                return (
+                  <div
+                    key={domainItem.domain}
+                    className={`domain-card card tier-${domainItem.tier}`}
+                  >
+                    <div className="domain-card-header">
+                      <span className="rank-number">#{idx + 1}</span>
+                      <h3 className="domain-name">
+                        {domainItem.domain.replace("_", " ").toUpperCase()}
+                      </h3>
+                      <span className={`tier-badge badge-${domainItem.tier}`}>
+                        {domainItem.tier === "focus_now"
+                          ? "Focus Now"
+                          : domainItem.tier === "monitor"
+                          ? "Monitor"
+                          : "Maintain"}
+                      </span>
+                    </div>
+
+                    <div className="domain-metrics">
+                      <span>
+                        Severity: <strong>{domainItem.severity} / 4</strong>
+                      </span>
+                      <span>
+                        Daily Impact: <strong>{domainItem.impact} / 3</strong>
+                      </span>
+                    </div>
+
+                    {pathway && (
+                      <div className="pathway-details">
+                        {pathway.clinicians?.length > 0 && (
+                          <div className="pathway-block">
+                            <strong>👩‍⚕️ Clinicians to consult:</strong>
+                            <p>{pathway.clinicians.join(", ")}</p>
+                          </div>
+                        )}
+
+                        {pathway.questions_for_doctor?.length > 0 && (
+                          <div className="pathway-block">
+                            <strong>💬 Questions to ask your doctor:</strong>
+                            <ul>
+                              {pathway.questions_for_doctor.map((q, qIdx) => (
+                                <li key={qIdx}>{q}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {pathway.tests_to_ask_about?.length > 0 && (
+                          <div className="pathway-block">
+                            <strong>🧪 Tests to discuss:</strong>
+                            <p>{pathway.tests_to_ask_about.join(", ")}</p>
+                          </div>
+                        )}
+
+                        {pathway.monitor?.length > 0 && (
+                          <div className="pathway-block">
+                            <strong>📊 What to monitor at home:</strong>
+                            <p>{pathway.monitor.join(", ")}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* AI Assistant Chat Section */}
+            <div className="card chat-card">
+              <h3>💬 {lang === "hi" ? "केयर असिस्टेंट से बात करें" : "Discuss Your Care Map"}</h3>
+              <p className="card-subtitle">
+                {lang === "hi"
+                  ? "अपने केयर मैप या स्वास्थ्य दिशानिर्देशों के बारे में सवाल पूछें।"
+                  : "Ask questions grounded strictly in your assessment context & verified guidelines."}
+              </p>
+
+              <div className="chat-log">
+                {chatHistory.length === 0 && (
+                  <p className="chat-placeholder">
+                    {lang === "hi"
+                      ? "उदाहरण: 'मेरे लिए सबसे पहले कौन सा टेस्ट पूछना चाहिए?'"
+                      : "Try asking: 'Which questions should I prioritize for my doctor visit?'"}
+                  </p>
+                )}
+                {chatHistory.map((item, index) => (
+                  <div key={index} className={`chat-message ${item.sender}`}>
+                    <div className="message-content">{item.text}</div>
+                  </div>
+                ))}
+                {chatLoading && (
+                  <div className="chat-message assistant">
+                    <div className="message-content loading">...</div>
+                  </div>
+                )}
+              </div>
+
+              <form onSubmit={handleSendChat} className="chat-input-row">
+                <input
+                  type="text"
+                  value={chatMessage}
+                  onChange={(e) => setChatMessage(e.target.value)}
+                  placeholder={
+                    lang === "hi"
+                      ? "अपने सवाल यहाँ लिखें..."
+                      : "Ask about your care recommendations..."
+                  }
+                  className="chat-text-input"
+                />
+                <button type="submit" className="btn-primary" disabled={chatLoading}>
+                  {lang === "hi" ? "भेजें" : "Send"}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="app-footer">
+        <p>
+          MahilaSakhi v3 • Grounded in the 2023 International Evidence-based Guideline for the
+          Assessment and Management of Polycystic Ovary Syndrome (PCOS).
+        </p>
+        <p>
+          <small>
+            Strictly Educational Care Navigation. No clinical diagnosis or medical prescription is
+            provided. Tele-MANAS crisis helpline: <strong>14416</strong>.
+          </small>
+        </p>
+      </footer>
+    </div>
+  );
 }
-
-};
-
-const chartData={
-labels:[
-"Age","Weight","BMI","Weight Gain",
-"Cycle","Hair Growth","Pimples",
-"Skin Dark","FSH","Exercise"
-],
-datasets:[{
-label:"Health Indicators",
-data:[
-age,weight,bmi,weightGain,
-cycleIrregular,hairGrowth,
-pimples,skinDarkening,fsh,exercise
-],
-backgroundColor:"#ff6b81"
-}]
-};
-
-const getRecommendations=()=>{
-
-let tips=[];
-
-if(bmi>25)
-tips.push("Maintain healthy BMI with balanced diet and exercise.");
-
-if(weightGain===1)
-tips.push("Reduce sugar intake and monitor weight.");
-
-if(cycleIrregular===1)
-tips.push("Maintain consistent sleep schedule.");
-
-if(hairGrowth===1 || pimples===1)
-tips.push("Possible hormonal imbalance detected.");
-
-if(skinDarkening===1)
-tips.push("Possible insulin resistance.");
-
-if(exercise===0)
-tips.push("Start daily exercise such as yoga or walking.");
-
-if(tips.length===0)
-tips.push("Your indicators look healthy. Maintain balanced lifestyle.");
-
-return tips;
-
-};
-
-const getDietPlan=()=>{
-
-return[
-"Breakfast: Oats with fruits",
-"Lunch: Roti with vegetables and dal",
-"Snack: Yogurt with nuts",
-"Dinner: Light salad with protein"
-];
-
-};
-
-const getBotReply=(msg)=>{
-
-msg=msg.toLowerCase();
-
-if(msg.includes("diet"))
-return "For PCOD focus on high fiber foods, vegetables and reduce sugar.";
-
-if(msg.includes("exercise"))
-return "Daily walking, yoga and strength training help regulate hormones.";
-
-if(msg.includes("acne"))
-return "PCOD acne occurs due to hormonal imbalance.";
-
-return "Maintain healthy diet, exercise and consult doctor if symptoms persist.";
-
-};
-
-const sendMessage=()=>{
-
-if(!message) return;
-
-const userMsg={sender:"user",text:message};
-
-const botMsg={
-sender:"bot",
-text:getBotReply(message)
-};
-
-setChat([...chat,userMsg,botMsg]);
-setMessage("");
-
-};
-
-const yesNo=(label,value,setValue)=>(
-
-<div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"6px"}}>
-
-<p style={{width:"150px",fontSize:"14px"}}>{label}</p>
-
-<button
-onClick={()=>setValue(1)}
-style={{
-background:value===1?"#ff6b81":"#eee",
-border:"none",
-padding:"5px 14px",
-borderRadius:"18px",
-fontWeight:"bold",
-cursor:"pointer",
-fontSize:"13px"
-}}
->
-Yes
-</button>
-
-<button
-onClick={()=>setValue(0)}
-style={{
-background:value===0?"#ff6b81":"#eee",
-border:"none",
-padding:"5px 14px",
-borderRadius:"18px",
-fontWeight:"bold",
-cursor:"pointer",
-fontSize:"13px"
-}}
->
-No
-</button>
-
-</div>
-
-);
-
-return(
-
-<div style={{
-fontFamily:"Arial",
-minHeight:"100vh",
-background:"linear-gradient(135deg,#fff0f3,#ffe4e9)"
-}}>
-
-{/* Navbar */}
-
-<div style={{
-display:"flex",
-justifyContent:"space-between",
-alignItems:"center",
-padding:"12px 35px",
-background:"white",
-boxShadow:"0 2px 6px rgba(0,0,0,0.05)"
-}}>
-
-<h2 style={{color:"#ff6b81"}}>🌸 MahilaSakhi</h2>
-
-<div style={{display:"flex",gap:"18px",color:"#555",fontSize:"14px"}}>
-
-<p style={{cursor:"pointer"}} onClick={()=>document.getElementById("dashboard").scrollIntoView({behavior:"smooth"})}>Dashboard</p>
-
-<p style={{cursor:"pointer"}} onClick={()=>document.getElementById("ai-health").scrollIntoView({behavior:"smooth"})}>AI Health</p>
-
-<p style={{cursor:"pointer"}} onClick={()=>document.getElementById("about").scrollIntoView({behavior:"smooth"})}>About</p>
-
-</div>
-
-</div>
-
-{/* Main Card */}
-
-<div
-id="dashboard"
-style={{
-maxWidth:"1100px",
-margin:"10px auto",
-background:"white",
-borderRadius:"16px",
-padding:"18px",
-boxShadow:"0 10px 20px rgba(0,0,0,0.1)"
-}}
->
-
-<h1 style={{
-textAlign:"center",
-fontSize:"30px",
-background:"linear-gradient(90deg,#ff6b81,#ff9aa2)",
-WebkitBackgroundClip:"text",
-WebkitTextFillColor:"transparent"
-}}>
-AI PCOD Risk Analyzer
-</h1>
-
-<p style={{
-textAlign:"center",
-color:"#666",
-marginBottom:"12px",
-fontSize:"14px"
-}}>
-Personalized Women's Health Assistant
-</p>
-
-<div style={{
-display:"grid",
-gridTemplateColumns:"1fr 1fr",
-gap:"20px"
-}}>
-
-{/* LEFT */}
-
-<div>
-
-<div style={{
-display:"grid",
-gridTemplateColumns:"1fr 1fr",
-gap:"10px"
-}}>
-
-<input placeholder="Age" value={age} onChange={(e)=>setAge(e.target.value)} style={inputStyle}/>
-<input placeholder="Weight" value={weight} onChange={(e)=>setWeight(e.target.value)} style={inputStyle}/>
-<input placeholder="BMI" value={bmi} onChange={(e)=>setBmi(e.target.value)} style={inputStyle}/>
-<input placeholder="FSH Level" value={fsh} onChange={(e)=>setFsh(e.target.value)} style={inputStyle}/>
-
-</div>
-
-<br/>
-
-{yesNo("Weight Gain",weightGain,setWeightGain)}
-{yesNo("Cycle Irregular",cycleIrregular,setCycleIrregular)}
-{yesNo("Hair Growth",hairGrowth,setHairGrowth)}
-{yesNo("Pimples",pimples,setPimples)}
-{yesNo("Skin Darkening",skinDarkening,setSkinDarkening)}
-{yesNo("Exercise Regularly",exercise,setExercise)}
-
-<br/>
-
-<button
-onClick={predictPCOD}
-style={{
-background:"linear-gradient(90deg,#ff6b81,#ff9aa2)",
-color:"white",
-border:"none",
-padding:"10px 26px",
-borderRadius:"22px",
-fontWeight:"bold",
-cursor:"pointer",
-fontSize:"14px"
-}}
->
-Predict PCOD Risk
-</button>
-
-{result &&(
-
-<div style={{marginTop:"10px"}}>
-
-<h2 style={{color:result.includes("High")?"#d60000":"green",fontSize:"18px"}}>
-{result}
-</h2>
-
-<h3 style={{fontSize:"15px"}}>AI Health Recommendations</h3>
-
-<ul style={{fontSize:"13px"}}>
-{getRecommendations().map((tip,index)=>(
-<li key={index}>{tip}</li>
-))}
-</ul>
-
-{result.includes("High") &&(
-
-<div>
-
-<h3 style={{fontSize:"15px"}}>Recommended Diet Plan</h3>
-
-<ul style={{fontSize:"13px"}}>
-{getDietPlan().map((meal,index)=>(
-<li key={index}>{meal}</li>
-))}
-</ul>
-
-</div>
-
-)}
-
-</div>
-
-)}
-
-</div>
-
-{/* RIGHT */}
-
-<div>
-
-<div style={{
-background:"white",
-borderRadius:"12px",
-padding:"10px",
-boxShadow:"0 3px 10px rgba(0,0,0,0.08)"
-}}>
-
-<h3 style={{textAlign:"center",fontSize:"16px"}}>Health Indicators Chart</h3>
-
-<div style={{height:"180px"}}>
-<Bar data={chartData} options={{responsive:true,maintainAspectRatio:false}}/>
-</div>
-
-<p style={{textAlign:"center",color:"#777",fontSize:"12px"}}>
-Your health indicators visualization
-</p>
-
-</div>
-
-{/* Chatbot */}
-
-<div
-id="ai-health"
-style={{
-marginTop:"10px",
-background:"#ffffff",
-borderRadius:"12px",
-boxShadow:"0 4px 8px rgba(0,0,0,0.1)",
-padding:"10px"
-}}
->
-
-<h3 style={{fontSize:"15px"}}>💬 PCOD Health Assistant</h3>
-
-<div style={{
-height:"110px",
-overflowY:"auto",
-background:"#fafafa",
-borderRadius:"10px",
-padding:"8px",
-marginBottom:"6px",
-display:"flex",
-flexDirection:"column",
-gap:"6px"
-}}>
-
-{chat.map((c,i)=>(
-<div
-key={i}
-style={{
-alignSelf:c.sender==="user"?"flex-end":"flex-start",
-background:c.sender==="user"?"#ff6b81":"#eee",
-color:c.sender==="user"?"white":"black",
-padding:"6px 10px",
-borderRadius:"12px",
-maxWidth:"70%",
-fontSize:"12px"
-}}
->
-{c.text}
-</div>
-))}
-
-</div>
-
-<div style={{display:"flex",gap:"6px"}}>
-
-<input
-placeholder="Ask about PCOD..."
-value={message}
-onChange={(e)=>setMessage(e.target.value)}
-style={{
-flex:1,
-padding:"6px",
-borderRadius:"8px",
-border:"1px solid #ddd",
-fontSize:"12px"
-}}
-/>
-
-<button
-onClick={sendMessage}
-style={{
-background:"#ff6b81",
-color:"white",
-border:"none",
-padding:"6px 12px",
-borderRadius:"8px",
-fontSize:"12px"
-}}
->
-Send
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-{/* About */}
-
-<div
-id="about"
-style={{
-maxWidth:"900px",
-margin:"20px auto",
-textAlign:"center",
-color:"#666",
-fontSize:"13px"
-}}
->
-
-<h2>About MahilaSakhi</h2>
-
-<p>
-MahilaSakhi is an AI-powered women's health assistant that predicts
-PCOD risk using machine learning and provides personalized health
-recommendations including diet guidance and an AI chatbot.
-</p>
-
-</div>
-
-</div>
-
-);
-
-}
-
-const inputStyle={
-width:"100%",
-padding:"8px",
-borderRadius:"8px",
-border:"1px solid #ddd",
-fontSize:"13px"
-};
 
 export default App;

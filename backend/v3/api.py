@@ -69,6 +69,16 @@ def assess():
     return jsonify(result)
 
 
+@bp.route("/health", methods=["GET"])
+def v3_health():
+    """Liveness probe for v3 API."""
+    return jsonify({
+        "status": "healthy",
+        "service": "mahilasakhi-v3",
+        "version": "3.0"
+    }), 200
+
+
 @bp.route("/delete", methods=["POST", "DELETE"])
 def delete_user_data():
     """

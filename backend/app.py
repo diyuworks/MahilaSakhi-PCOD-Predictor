@@ -27,9 +27,28 @@ from v3.chat import handle_chat
 from limiter import limiter
 
 app = Flask(__name__)
-CORS(app)
+
+# Restrict CORS to configured origins in production; allow local/wildcard otherwise
+_allowed_origins_env = os.environ.get("ALLOWED_ORIGIN") or os.environ.get("FRONTEND_URL")
+if _allowed_origins_env and os.environ.get("FLASK_ENV") == "production":
+    _origins = [o.strip() for o in _allowed_origins_env.split(",") if o.strip()]
+    CORS(app, origins=_origins)
+else:
+    CORS(app)
+
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1024
 limiter.init_app(app)
+
+@app.route("/health", methods=["GET"])
+def health():
+    """Liveness & readiness probe for cloud hosting platforms (e.g., Render, Railway)."""
+    return jsonify({
+        "status": "healthy",
+        "service": "mahilasakhi-backend",
+        "version": "3.0",
+        "model_loaded": model is not None,
+        "features_count": len(FEATURE_NAMES) if FEATURE_NAMES is not None else 0,
+    }), 200
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 v3_model_path = os.path.join(BASE_DIR, "..", "model", "pcod_clinical_v3.pkl")

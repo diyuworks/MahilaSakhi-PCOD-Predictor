@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import { t } from "./i18n";
-import { assessProfile, deleteUserData, downloadVisitPrepPdf } from "./api/v3";
+import { assessProfile, deleteUserData, downloadVisitPrepPdf, setServerWakingListener } from "./api/v3";
 import Landing from "./pages/Landing";
 import Wizard from "./pages/Wizard";
 import Review from "./pages/Review";
@@ -77,6 +77,14 @@ function App() {
   const [errorNotice, setErrorNotice] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [serverWaking, setServerWaking] = useState(false);
+
+  useEffect(() => {
+    setServerWakingListener((status) => {
+      setServerWaking(Boolean(status?.waking));
+    });
+    return () => setServerWakingListener(null);
+  }, []);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -269,6 +277,13 @@ function App() {
 
       {/* Main Pages Switch */}
       <main className="main-viewport-content">
+        {serverWaking && (
+          <div className="server-waking-banner card" role="status" aria-live="polite">
+            <span className="waking-icon" aria-hidden="true">⏳</span>
+            <p className="waking-text">{t("server_waking_up", lang)}</p>
+          </div>
+        )}
+
         {errorNotice && (
           <div className="global-error-card card" role="alert">
             <p>{errorNotice}</p>

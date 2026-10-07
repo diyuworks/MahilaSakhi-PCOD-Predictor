@@ -2456,3 +2456,32 @@ body {
   margin-bottom: 1rem;
   font-weight: 700;
 }
+
+/* Server Cold Start Wake-up Banner */
+.server-waking-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #fffbeb;
+  border: 1.5px solid #f59e0b;
+  color: #92400e;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  margin: 1rem 0;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.server-waking-banner .waking-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.server-waking-banner .waking-text {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #92400e;
+}
+

@@ -38,9 +38,28 @@ jobs:
         run: |
           python -m pytest tests -v
 
+      - name: Run Privacy & Zero-Persistence Tests
+        run: |
+          python -m pytest tests/test_privacy.py -v
+
       - name: Run Chat v2 Golden Eval Suite
         run: |
           python scripts/run_chat_eval.py
+
+      - name: Audit Secrets and Tracked Files
+        run: |
+          echo "Checking that no .env files are tracked..."
+          if git ls-files | grep -E "(^|/)\.env$"; then
+            echo "ERROR: Tracked .env file detected in git repository!"
+            exit 1
+          fi
+          echo "Checking that no API keys (nvapi-) are committed in repository..."
+          if git grep -E "nvapi-[A-Za-z0-9_-]{20,}"; then
+            echo "ERROR: Potential NVIDIA API key pattern detected in tracked files!"
+            exit 1
+          fi
+          echo "Secrets and tracked files audit passed."
+
 
   frontend-tests:
     name: Frontend React Tests & Build

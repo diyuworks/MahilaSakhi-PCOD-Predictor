@@ -6,6 +6,7 @@
   "delete_data": "Delete My Data",
   "data_deleted_notice": "All session data has been deleted from your browser.",
   "data_not_saved_notice": "Your answers live in browser memory only and are not saved on this device.",
+  "server_waking_up": "Server is waking up (Render free tier may take up to 30–40 seconds). Please hold on...",
   "landing": {
     "promise": "A personalised map of what matters most for YOUR PCOS.",
     "sub_promise": "Because no two women have the same body, symptoms, or goals. Answer a few questions about your unique health context to get a structured roadmap for your next doctor visit.",

@@ -7,7 +7,7 @@ from sklearn.metrics import accuracy_score
 
 # Load dataset from second sheet (actual data)
 data = pd.read_excel(
-    "../dataset/PCOS_data_without_infertility.xlsx",
+    "../../dataset/PCOS_data_without_infertility.xlsx",
     sheet_name=1
 )
 
@@ -83,6 +83,6 @@ accuracy = accuracy_score(y_test, pred)
 print("\nModel Accuracy:", accuracy)
 
 # Save model
-joblib.dump(model, "../model/pcod_model.pkl")
+joblib.dump(model, "../../model/pcod_model.pkl")
 
 print("\nModel saved successfully → model/pcod_model.pkl")

@@ -72,7 +72,7 @@ def test_generate_visit_prep_pdf_with_red_flags():
 
 
 def test_visit_prep_pdf_endpoint(client):
-    req_path = os.path.join(os.path.dirname(__file__), "..", "sample_request.json")
+    req_path = os.path.join(os.path.dirname(__file__), "fixtures", "sample_request.json")
     with open(req_path, "r", encoding="utf-8") as f:
         payload = json.load(f)
 

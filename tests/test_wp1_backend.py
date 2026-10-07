@@ -39,11 +39,13 @@ def test_v3_assess_validation_error(client):
 def test_v3_delete_endpoint(client):
     res_post = client.post("/v3/delete")
     assert res_post.status_code == 200
-    assert "DPDP" in res_post.get_json()["message"]
+    assert "deleted" in res_post.get_json()["message"]
+    assert "not stored" in res_post.get_json()["message"]
 
     res_del = client.delete("/v3/delete")
     assert res_del.status_code == 200
-    assert "DPDP" in res_del.get_json()["message"]
+    assert "deleted" in res_del.get_json()["message"]
+    assert "not stored" in res_del.get_json()["message"]
 
 
 def test_legacy_predict_insufficient_data(client):

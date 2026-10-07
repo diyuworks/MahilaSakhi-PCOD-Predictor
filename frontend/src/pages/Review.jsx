@@ -20,7 +20,7 @@ export default function Review({ profile, onEditSection, onSubmit, onBack, lang 
               onClick={() => onEditSection(1)}
               aria-label="Edit Anatomical Context"
             >
-              ✏️ {t("wizard.review.edit", lang)}
+              {t("wizard.review.edit", lang)}
             </button>
           </div>
           <div className="review-data-grid">
@@ -59,7 +59,7 @@ export default function Review({ profile, onEditSection, onSubmit, onBack, lang 
               onClick={() => onEditSection(2)}
               aria-label="Edit Symptoms and Impact"
             >
-              ✏️ {t("wizard.review.edit", lang)}
+              {t("wizard.review.edit", lang)}
             </button>
           </div>
           <div className="review-data-grid">
@@ -92,7 +92,7 @@ export default function Review({ profile, onEditSection, onSubmit, onBack, lang 
               onClick={() => onEditSection(4)}
               aria-label="Edit Metabolic Health"
             >
-              ✏️ {t("wizard.review.edit", lang)}
+              {t("wizard.review.edit", lang)}
             </button>
           </div>
           <div className="review-data-grid">
@@ -123,7 +123,7 @@ export default function Review({ profile, onEditSection, onSubmit, onBack, lang 
               onClick={() => onEditSection(5)}
               aria-label="Edit Wellbeing and Sleep"
             >
-              ✏️ {t("wizard.review.edit", lang)}
+              {t("wizard.review.edit", lang)}
             </button>
           </div>
           <div className="review-data-grid">
@@ -148,7 +148,7 @@ export default function Review({ profile, onEditSection, onSubmit, onBack, lang 
               onClick={() => onEditSection(6)}
               aria-label="Edit Main Concern"
             >
-              ✏️ {t("wizard.review.edit", lang)}
+              {t("wizard.review.edit", lang)}
             </button>
           </div>
           <div className="review-data-grid">
@@ -171,7 +171,7 @@ export default function Review({ profile, onEditSection, onSubmit, onBack, lang 
           onClick={onSubmit}
           disabled={loading}
         >
-          {loading ? "Synthesizing Care Pathway..." : `✨ ${t("wizard.submit_button", lang)}`}
+          {loading ? "Synthesizing Care Pathway..." : t("wizard.submit_button", lang)}
         </button>
       </div>
     </div>

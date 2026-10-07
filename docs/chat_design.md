@@ -81,10 +81,10 @@ Every user message (typed text or future voice transcripts) is processed strictl
 
 ---
 
-## Privacy & DPDP Act 2023 Compliance
+## Privacy Architecture & Zero-Persistence Design
 1. **Zero Raw Text Logging**: Message text, transcripts, and profile contents are never persisted to disk or server log files.
 2. **Telemetry Only**: Server logs record only metadata: route (`safety`, `deterministic`, `grounded`, `fallback`), classified intent, response latency, and HTTP status code.
-3. **In-Memory Sessions**: Profiles live in React state and in-memory request lifecycles only.
+3. **In-Memory Sessions**: Profiles live in React state and in-memory request lifecycles only (`TODO(legal review)` for DPDP Act 2023 formal certification; see [privacy.md](privacy.md)).
 
 ---
 

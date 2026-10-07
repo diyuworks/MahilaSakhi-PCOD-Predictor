@@ -236,7 +236,7 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
               <div key={idx} className={`chat-bubble-row ${m.sender}`}>
                 <div className={`chat-bubble ${m.sender}`}>
                   {/* Route Label by route */}
-                  {m.sender === "assistant" && m.route && m.route !== "safety" && (
+                  {m.sender === "assistant" && m.route && (
                     <div className="chat-route-badge-container">
                       {m.route === "deterministic" && (
                         <span className="chat-route-badge deterministic">
@@ -251,6 +251,11 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
                       {m.route === "fallback" && (
                         <span className="chat-route-badge fallback">
                           {t("care_map.chat_routes.fallback", lang) || "Not enough verified info; here's what to ask your doctor"}
+                        </span>
+                      )}
+                      {m.route === "safety" && (
+                        <span className="chat-route-badge safety">
+                          {t("care_map.chat_routes.safety", lang) || "Safety guidance"}
                         </span>
                       )}
                     </div>

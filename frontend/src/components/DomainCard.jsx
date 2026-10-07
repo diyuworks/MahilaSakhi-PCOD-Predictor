@@ -98,7 +98,7 @@ export default function DomainCard({
               <h5>{t("care_map.who_to_see", lang)}</h5>
               <p className="clinicians-tags">
                 {pathway.clinicians.map((c, i) => (
-                  <span key={i} className="clinician-tag">👩‍⚕️ {c}</span>
+                  <span key={i} className="clinician-tag">{c}</span>
                 ))}
               </p>
             </div>

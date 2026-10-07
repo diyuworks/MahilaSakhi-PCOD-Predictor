@@ -76,6 +76,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [errorNotice, setErrorNotice] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -86,8 +87,10 @@ function App() {
     if (
       !window.confirm(
         lang === "hi"
-          ? "क्या आप अपना सारा स्वास्थ्य डेटा हटाना चाहती हैं? यह DPDP अधिनियम के तहत स्थायी होगा।"
-          : "Are you sure you want to delete all session data under DPDP Act 2023?"
+          ? "क्या आप अपना सारा स्वास्थ्य डेटा हटाना चाहती हैं? यह आपके ब्राउज़र से स्थायी रूप से मिटा दिया जाएगा।"
+          : lang === "gu"
+          ? "શું તમે તમારો તમામ સ્વાસ્થ્ય ડેટા કાઢી નાખવા માંગો છો? આ તમારા બ્રાઉઝરમાંથી કાયમ માટે કાઢી નાખવામાં આવશે."
+          : "Are you sure you want to delete all session data from your browser?"
       )
     ) {
       return;
@@ -246,12 +249,23 @@ function App() {
         </div>
       </header>
 
-      {/* Persistent Security Ribbon */}
-      <div className="security-top-ribbon">
-        <span>{t("privacy_badge", lang)}</span>
-        <span className="dot">•</span>
-        <span>{t("disclaimer_short", lang)}</span>
-      </div>
+      {/* Single Dismissible Educational Guidance Note */}
+      {!bannerDismissed && (
+        <aside className="educational-banner-bar" role="note" aria-label="Educational Notice">
+          <div className="educational-banner-text">
+            <span>{t("educational_note", lang) || "Educational guidance, not a diagnosis"}</span>
+          </div>
+          <button
+            type="button"
+            className="btn-banner-dismiss"
+            onClick={() => setBannerDismissed(true)}
+            aria-label={lang === "hi" ? "बंद करें" : lang === "gu" ? "બંધ કરો" : "Dismiss"}
+            title="Dismiss note"
+          >
+            ✕
+          </button>
+        </aside>
+      )}
 
       {/* Main Pages Switch */}
       <main className="main-viewport-content">
@@ -336,6 +350,11 @@ function App() {
         lang={lang}
         defaultOpen={true}
       />
+
+      {/* Persistent Global Footer Disclaimer */}
+      <footer className="global-viewport-footer" role="contentinfo">
+        <p>{t("disclaimer_short", lang)}</p>
+      </footer>
     </div>
   );
 }

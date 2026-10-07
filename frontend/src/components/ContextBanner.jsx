@@ -5,7 +5,6 @@ export default function ContextBanner({ notes = [] }) {
 
   return (
     <div className="context-banner" role="status" aria-live="polite">
-      <div className="context-banner-icon" aria-hidden="true">💡</div>
       <div className="context-banner-body">
         {notes.map((note, idx) => (
           <p key={idx} className="context-banner-text">

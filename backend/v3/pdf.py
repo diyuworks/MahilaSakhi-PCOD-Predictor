@@ -319,10 +319,10 @@ def generate_visit_prep_pdf(result: Dict[str, Any], profile: Optional[Dict[str, 
     story.append(safety_table)
     story.append(Spacer(1, 4))
 
-    # 7. Regulatory & DPDP Disclaimer
+    # 7. Regulatory & Privacy Disclaimer
     disclaimer_text = (
         "<b>Educational Guidance Notice:</b> MahilaSakhi is an evidence-informed care navigation tool designed to prepare you for a doctor visit. "
-        "It does NOT provide medical diagnoses, treatment decisions, or drug prescriptions. Compliant with India DPDP Act 2023."
+        "It does NOT provide medical diagnoses, treatment decisions, or drug prescriptions. Your answers are not stored on our servers."
     )
     story.append(Paragraph(disclaimer_text, disclaimer_style))
 

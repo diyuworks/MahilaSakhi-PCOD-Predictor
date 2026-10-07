@@ -1,0 +1,62 @@
+[
+  {
+    "id": "hysterectomy_ovaries_intact",
+    "input": { "age": 38, "uterus": "no", "ovaries": "both", "menopause_status": "none" }
+  },
+  {
+    "id": "hysterectomy_under_45",
+    "input": { "age": 34, "uterus": "no", "ovaries": "both" }
+  },
+  {
+    "id": "both_ovaries_removed_surgical_menopause",
+    "input": { "age": 40, "uterus": "no", "ovaries": "neither" }
+  },
+  {
+    "id": "unsure_ovaries",
+    "input": { "age": 40, "uterus": "no", "ovaries": "unsure" }
+  },
+  {
+    "id": "postmenopausal_natural",
+    "input": { "age": 58, "uterus": "yes", "menopause_status": "natural" }
+  },
+  {
+    "id": "lean_regular_cycle",
+    "input": { "age": 24, "uterus": "yes" }
+  },
+  {
+    "id": "hormonal_contraception",
+    "input": { "age": 26, "uterus": "yes", "on_hormonal_contraception": true }
+  },
+  {
+    "id": "hrt_perimenopause",
+    "input": { "age": 49, "uterus": "yes", "menopause_status": "perimenopause", "on_hrt": true }
+  },
+  {
+    "id": "trying_to_conceive",
+    "input": { "age": 29, "uterus": "yes", "reproductive_goal": "trying" }
+  },
+  {
+    "id": "fertility_concerns",
+    "input": { "age": 26, "uterus": "yes", "reproductive_goal": "fertility_concerns" }
+  },
+  {
+    "id": "reproductive_later",
+    "input": { "age": 24, "uterus": "yes", "reproductive_goal": "later" }
+  },
+  {
+    "id": "prefer_not_to_say",
+    "input": { "age": 31, "uterus": "yes", "reproductive_goal": "prefer_not_to_say" }
+  },
+  {
+    "id": "unsure_uterus",
+    "input": { "age": 33, "uterus": "unsure" }
+  },
+  {
+    "id": "age_47_preventive_menopause",
+    "input": { "age": 47, "uterus": "yes", "menopause_status": "none" }
+  },
+  {
+    "id": "hysterectomy_one_ovary",
+    "input": { "age": 36, "uterus": "no", "ovaries": "one" }
+  }
+]

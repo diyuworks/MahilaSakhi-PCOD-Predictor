@@ -21,7 +21,7 @@ export default function RedFlagBanner({
       {/* Tele-MANAS Emergency Alert */}
       {showTelemanas && (
         <div className="telemanas-emergency-banner" role="alert" aria-live="assertive">
-          <div className="emergency-icon" aria-hidden="true">🚨</div>
+          <div className="emergency-icon" aria-hidden="true">!</div>
           <div className="emergency-content">
             <h4>{t("wizard.wellbeing.safety_alert_title", lang)}</h4>
             <p>{t("wizard.wellbeing.safety_alert_msg", lang)}</p>
@@ -31,7 +31,7 @@ export default function RedFlagBanner({
                 className="btn-emergency-ack"
                 onClick={onAcknowledgeTelemanas}
               >
-                ✓ {t("wizard.wellbeing.safety_alert_ack", lang)}
+                {t("wizard.wellbeing.safety_alert_ack", lang)}
               </button>
             )}
           </div>
@@ -45,7 +45,7 @@ export default function RedFlagBanner({
           role="alert"
           aria-live="polite"
         >
-          <div className="alert-icon" aria-hidden="true">⚠️</div>
+          <div className="alert-icon" aria-hidden="true">!</div>
           <div className="alert-body">
             <div className="urgency-label-pill">{urgencyLabel}</div>
             <ul className="flags-list">

@@ -72,12 +72,12 @@ def assess():
 @bp.route("/delete", methods=["POST", "DELETE"])
 def delete_user_data():
     """
-    User data removal endpoint (India DPDP Act 2023 compliance).
-    Ensures complete removal of user health inputs.
+    User data removal endpoint.
+    Confirms complete removal of session data. Answers are not stored on our servers.
     """
     return jsonify({
         "status": "success",
-        "message": "User health data and assessment records deleted successfully in accordance with India DPDP Act 2023."
+        "message": "User health data and assessment records deleted from session. Answers are not stored on our servers."
     }), 200
 
 

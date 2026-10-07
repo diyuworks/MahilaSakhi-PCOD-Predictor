@@ -2,11 +2,10 @@
   "app_name": "MahilaSakhi",
   "app_tagline": "AI-Assisted Context-Aware PCOS Care Navigation",
   "disclaimer_short": "Educational guidance to prepare for a clinician visit. Not a medical diagnosis.",
-  "privacy_badge": "DPDP Act 2023 Compliant • Zero Raw Health Data Stored",
+  "privacy_badge": "Your answers are not stored on our servers",
   "delete_data": "Delete My Data",
-  "data_deleted_notice": "All session data has been deleted under DPDP Act 2023.",
+  "data_deleted_notice": "All session data has been deleted from your browser.",
   "data_not_saved_notice": "Your answers live in browser memory only and are not saved on this device.",
-
   "landing": {
     "promise": "A personalised map of what matters most for YOUR PCOS.",
     "sub_promise": "Because no two women have the same body, symptoms, or goals. Answer a few questions about your unique health context to get a structured roadmap for your next doctor visit.",
@@ -15,7 +14,6 @@
     "consent_checkbox": "I understand that MahilaSakhi provides educational guidance for doctor visits and does not replace medical care. I consent to proceed.",
     "start_button": "Start Your Assessment"
   },
-
   "wizard": {
     "step_of": "Step {{current}} of {{total}}",
     "required_indicator": "* Required",
@@ -27,7 +25,6 @@
     "skip": "Skip this section",
     "review_button": "Review My Answers",
     "submit_button": "See My Care Map",
-
     "steps": {
       "context": "Health Context",
       "symptoms": "Symptoms & Impact",
@@ -36,7 +33,6 @@
       "concern": "Main Concern",
       "review": "Review Answers"
     },
-
     "context": {
       "title": "Your Reproductive & Anatomical Context",
       "subtitle": "Care navigation begins with understanding your unique body. We never assume every person has a cycle or uterus.",
@@ -64,7 +60,6 @@
       "goal_trying": "Currently trying to conceive",
       "goal_concerns": "Concerned about future fertility"
     },
-
     "symptoms": {
       "title": "Symptom Severity & Daily Impact",
       "subtitle": "Select how noticeable each symptom is right now, and how much it affects your daily confidence or comfort.",
@@ -135,7 +130,6 @@
         "hormone_note": "Hormonal medication can mask your natural cycle, so bleeding is a weak signal for you."
       }
     },
-
     "metabolic": {
       "title": "Metabolic & Physical Health Indicators",
       "subtitle": "PCOS is closely tied to insulin sensitivity and metabolic balance.",
@@ -159,7 +153,6 @@
       "follicle_left": "Left Ovary Follicle Count",
       "follicle_right": "Right Ovary Follicle Count"
     },
-
     "wellbeing": {
       "title": "Emotional Wellbeing & Sleep",
       "subtitle": "Hormonal health deeply influences mood, energy, and sleep. These screening modules are completely optional.",
@@ -181,7 +174,6 @@
       "safety_alert_msg": "You indicated thoughts of hurting yourself. Please reach out to someone you trust or contact a crisis professional right now. In India, call the free 24/7 National Mental Health Helpline Tele-MANAS at 14416.",
       "safety_alert_ack": "I have read and acknowledged this emergency support information"
     },
-
     "concern": {
       "title": "What bothers you the most right now?",
       "subtitle": "Choosing your chief concern helps our engine place the most relevant guidance at the very top of your care map.",
@@ -202,7 +194,6 @@
       "flag_heavy": "Heavy bleeding soaking through pads/tampons every hour",
       "flag_postmeno_bleeding": "Any vaginal bleeding occurring after menopause"
     },
-
     "review": {
       "title": "Review Your Answers",
       "subtitle": "Confirm your answers before we generate your personalised care map. You can edit any section below.",
@@ -214,7 +205,6 @@
       "section_concern": "Main Concern"
     }
   },
-
   "care_map": {
     "title": "Your Personalised PCOS Care Map",
     "subtitle": "A structured, prioritized action plan to discuss with your healthcare provider.",
@@ -242,12 +232,14 @@
       "deterministic": "From your Care Map",
       "grounded": "Based on guideline excerpts",
       "fallback": "Not enough verified info; here's what to ask your doctor",
-      "sources": "Sources"
+      "sources": "Sources",
+      "safety": "Safety & clinical guidance"
     },
     "chat_not_diagnosis": "Not a diagnosis • Educational guidance for doctor visits",
     "chat_still_working": "Still working...",
     "chat_retry": "Retry",
     "call_tele_manas": "Call Tele-MANAS: 14416 (24x7 Free)",
     "call_emergency": "Emergency: 112"
-  }
+  },
+  "educational_note": "Educational guidance, not a diagnosis"
 }

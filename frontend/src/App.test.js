@@ -2,11 +2,19 @@ import React from "react";
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import App from "./App";
 import { deriveContext } from "./contextHelper";
+import personasFixture from "./fixtures/personas_context.json";
 
-test("Landing page renders promise, DPDP notice, and disabled Start button until consent", () => {
+test("Landing page renders promise, privacy notice, and disabled Start button until consent", () => {
   render(<App />);
   expect(screen.getByRole("heading", { level: 1, name: /MahilaSakhi/i })).toBeInTheDocument();
   expect(screen.getByText(/A personalised map of what matters most for YOUR PCOS/i)).toBeInTheDocument();
+
+  // Single dismissible educational note is present and can be dismissed
+  const eduBanner = screen.getByText(/Educational guidance, not a diagnosis/i);
+  expect(eduBanner).toBeInTheDocument();
+  const dismissBtn = screen.getByRole("button", { name: /Dismiss/i });
+  fireEvent.click(dismissBtn);
+  expect(screen.queryByText(/Educational guidance, not a diagnosis/i)).not.toBeInTheDocument();
 
   const startBtn = screen.getByRole("button", { name: /Start Your Assessment/i });
   expect(startBtn).toBeDisabled();
@@ -85,6 +93,31 @@ test("deriveContext unit test: bilateral oophorectomy triggers surgical menopaus
   expect(ctx.applicable_domains).not.toContain("menstrual");
 });
 
+test("parity test: frontend deriveContext handles all personas fixture cases identically", () => {
+  expect(personasFixture.length).toBeGreaterThanOrEqual(15);
+  for (const item of personasFixture) {
+    const res = deriveContext(item.input);
+    expect(res.applicable_domains).toContain("androgen");
+    expect(res.applicable_domains).toContain("metabolic");
+    expect(res.applicable_domains).toContain("mental");
+    expect(res.applicable_domains).toContain("sleep");
+
+    if (item.input.uterus === "no") {
+      expect(res.cycle_tracking).toBe("not_applicable");
+      expect(res.applicable_domains).not.toContain("menstrual");
+      expect(res.applicable_domains).not.toContain("fertility");
+    }
+    if (item.input.ovaries === "neither") {
+      expect(res.effective_menopause).toBe("surgical");
+      expect(res.applicable_domains).toContain("menopause_bone_cv");
+    }
+    if (item.input.menopause_status === "natural") {
+      expect(res.cycle_tracking).toBe("not_applicable");
+      expect(res.postmenopausal).toBe(true);
+    }
+  }
+});
+
 test("Language toggle switches seamlessly to Hindi (Devanagari)", () => {
   render(<App />);
   const hiBtn = screen.getByRole("button", { name: "हिन्दी" });
@@ -96,6 +129,19 @@ test("Language toggle switches seamlessly to Hindi (Devanagari)", () => {
   ).toBeInTheDocument();
   expect(screen.getByRole("button", { name: /मूल्यांकन शुरू करें/i })).toBeInTheDocument();
 });
+
+test("Language toggle switches seamlessly to Gujarati", () => {
+  render(<App />);
+  const guBtn = screen.getByRole("button", { name: "ગુજરાતી" });
+  fireEvent.click(guBtn);
+
+  // Landing page in Gujarati
+  expect(
+    screen.getByText(/તમારા શરીર અને લક્ષણો માટે વ્યક્તિગત PCOD કેર મેપ/i)
+  ).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /મૂલ્યાંકન શરૂ કરો/i })).toBeInTheDocument();
+});
+
 
 test("Tele-MANAS safety alert displays immediately and persistently when self-harm is indicated", () => {
   render(<App />);

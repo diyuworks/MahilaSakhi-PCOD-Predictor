@@ -1,4 +1,4 @@
-import os, re
+import os, re, logging, time
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd
 from openai import OpenAI
 from rule_engine import screen_menopause, screen_endometriosis
+
+chat_logger = logging.getLogger("mahilasakhi.chat")
 
 # Auto-load backend/.env if present
 _env_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
@@ -147,7 +149,13 @@ def predict_thyroid():
 @app.route('/chat', methods=['POST'])
 @limiter.limit("30/minute")
 def chat():
-    result = handle_chat(request.get_json(force=True) or {}, client=client)
+    start_time = time.time()
+    payload = request.get_json(force=True) or {}
+    result = handle_chat(payload, client=client)
+    latency_ms = round((time.time() - start_time) * 1000, 2)
+    route = result.get("route", "error" if result.get("status") == 400 else "unknown")
+    intent = result.get("intent", "none")
+    chat_logger.info("chat_completed route=%s intent=%s latency_ms=%s", route, intent, latency_ms)
     if result.get("status") == 400:
         return jsonify({"error": result["error"]}), 400
     return jsonify(result)

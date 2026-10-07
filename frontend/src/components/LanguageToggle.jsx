@@ -19,6 +19,14 @@ export default function LanguageToggle({ currentLang, onToggle }) {
       >
         हिन्दी
       </button>
+      <button
+        type="button"
+        className={`lang-btn ${currentLang === "gu" ? "active" : ""}`}
+        onClick={() => onToggle("gu")}
+        aria-pressed={currentLang === "gu"}
+      >
+        ગુજરાતી
+      </button>
     </div>
   );
 }

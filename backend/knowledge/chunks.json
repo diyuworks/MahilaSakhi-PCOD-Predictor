@@ -1,101 +1,139 @@
 [
   {
     "id": "PCOS-GL-2023-DIAG-01",
-    "tags": ["menstrual", "androgen"],
+    "tags": [
+      "menstrual",
+      "androgen"
+    ],
     "source": "International Evidence-based Guideline for the Assessment and Management of Polycystic Ovary Syndrome 2023 (Teede et al., Hum Reprod 2023;38(9):1655-1679)",
     "url": "https://academic.oup.com/humrep/article/38/9/1655/7241315",
     "locator": "Recommendation 1.1 / Diagnostic Algorithm",
     "verified": false,
-    "text": "PCOS should be diagnosed using the revised 2003 Rotterdam Criteria, requiring 2 of 3 features in adults: 1) ovulatory dysfunction (irregular or absent cycles), 2) clinical and/or biochemical hyperandrogenism, 3) polycystic ovarian morphology on ultrasound or elevated Anti-Müllerian Hormone (AMH), with exclusion of other etiologies (thyroid disease, hyperprolactinemia, non-classic congenital adrenal hyperplasia)."
+    "text": "PCOS should be diagnosed using the revised 2003 Rotterdam Criteria, requiring 2 of 3 features in adults: 1) ovulatory dysfunction (irregular or absent cycles), 2) clinical and/or biochemical hyperandrogenism, 3) polycystic ovarian morphology on ultrasound or elevated Anti-Müllerian Hormone (AMH), with exclusion of other etiologies (thyroid disease, hyperprolactinemia, non-classic congenital adrenal hyperplasia).",
+    "review_status": "UNVERIFIED: locator and text not yet checked against the source"
   },
   {
     "id": "PCOS-GL-2023-ANDROGEN-01",
-    "tags": ["androgen"],
+    "tags": [
+      "androgen"
+    ],
     "source": "International Evidence-based Guideline for PCOS 2023 (Teede et al., Hum Reprod 2023)",
     "url": "https://academic.oup.com/humrep/article/38/9/1655/7241315",
     "locator": "Section 2.1 Clinical Hyperandrogenism",
     "verified": false,
-    "text": "A comprehensive medical history and physical examination should be conducted for clinical signs of hyperandrogenism, specifically terminal hair hirsutism, severe acne, and female pattern hair loss. Severe hirsutism in adults is strongly predictive of biochemical hyperandrogenism and PCOS. Rapid onset or progressive worsening of virilizing androgen features requires prompt medical investigation to exclude androgen-secreting tumors or non-PCOS etiologies."
+    "text": "A comprehensive medical history and physical examination should be conducted for clinical signs of hyperandrogenism, specifically terminal hair hirsutism, severe acne, and female pattern hair loss. Severe hirsutism in adults is strongly predictive of biochemical hyperandrogenism and PCOS. Rapid onset or progressive worsening of virilizing androgen features requires prompt medical investigation to exclude androgen-secreting tumors or non-PCOS etiologies.",
+    "review_status": "UNVERIFIED: locator and text not yet checked against the source"
   },
   {
     "id": "FERRIMAN-GALLWEY-1961-01",
-    "tags": ["androgen"],
+    "tags": [
+      "androgen"
+    ],
     "source": "Ferriman D, Gallwey JD. Clinical assessment of body hair growth in women. J Clin Endocrinol Metab 1961;21:1440-1447",
     "url": "https://academic.oup.com/jcem/article-abstract/21/11/1440/2718919",
     "locator": "Original mFG Scale Definition",
     "verified": false,
-    "text": "The modified Ferriman-Gallwey (mFG) visual scoring method grades terminal hair growth across 9 body sites from 0 (no terminal hair) to 4 (extensive growth). Cut-offs vary by ethnicity, with lower thresholds (mFG >= 4 to 6) applicable in Asian and South Asian populations."
+    "text": "The modified Ferriman-Gallwey (mFG) visual scoring method grades terminal hair growth across 9 body sites from 0 (no terminal hair) to 4 (extensive growth). Cut-offs vary by ethnicity, with lower thresholds (mFG >= 4 to 6) applicable in Asian and South Asian populations.",
+    "review_status": "UNVERIFIED: locator and text not yet checked against the source"
   },
   {
     "id": "PCOS-GL-2023-METABOLIC-01",
-    "tags": ["metabolic", "lifestyle"],
+    "tags": [
+      "metabolic",
+      "lifestyle"
+    ],
     "source": "International Evidence-based Guideline for PCOS 2023 (Teede et al., Hum Reprod 2023)",
     "url": "https://academic.oup.com/humrep/article/38/9/1655/7241315",
     "locator": "Section 3.1 & 3.2 Cardiovascular and Glycaemic Risk Assessment",
     "verified": false,
-    "text": "All individuals with PCOS should have cardiometabolic risk profiling including BMI, waist circumference, and blood pressure monitoring. Glycaemic status (fasting glucose or oral glucose tolerance test / HbA1c) should be evaluated at initial consultation and reassessed every 1 to 3 years based on risk factors, family history, and gestational history. Lipid profiles should be checked to manage atherosclerotic risk."
+    "text": "All individuals with PCOS should have cardiometabolic risk profiling including BMI, waist circumference, and blood pressure monitoring. Glycaemic status (fasting glucose or oral glucose tolerance test / HbA1c) should be evaluated at initial consultation and reassessed every 1 to 3 years based on risk factors, family history, and gestational history. Lipid profiles should be checked to manage atherosclerotic risk.",
+    "review_status": "UNVERIFIED: locator and text not yet checked against the source"
   },
   {
     "id": "PCOS-GL-2023-LIFESTYLE-01",
-    "tags": ["metabolic", "lifestyle"],
+    "tags": [
+      "metabolic",
+      "lifestyle"
+    ],
     "source": "International Evidence-based Guideline for PCOS 2023 (Teede et al., Hum Reprod 2023)",
     "url": "https://academic.oup.com/humrep/article/38/9/1655/7241315",
     "locator": "Section 4.1 Healthy Lifestyle Interventions",
     "verified": false,
-    "text": "Lifestyle intervention (incorporating balanced nutrition, tailored physical exercise, and behavioural strategies) is recommended as foundational support for all women with PCOS to optimize metabolic health, energetic vitality, and quality of life. Weight stigma must be actively minimized, focusing on sustainable health habits rather than restrictive dieting."
+    "text": "Lifestyle intervention (incorporating balanced nutrition, tailored physical exercise, and behavioural strategies) is recommended as foundational support for all women with PCOS to optimize metabolic health, energetic vitality, and quality of life. Weight stigma must be actively minimized, focusing on sustainable health habits rather than restrictive dieting.",
+    "review_status": "UNVERIFIED: locator and text not yet checked against the source"
   },
   {
     "id": "PCOS-GL-2023-MENTAL-01",
-    "tags": ["mental"],
+    "tags": [
+      "mental"
+    ],
     "source": "International Evidence-based Guideline for PCOS 2023 (Teede et al., Hum Reprod 2023)",
     "url": "https://academic.oup.com/humrep/article/38/9/1655/7241315",
     "locator": "Section 2.4 Emotional Wellbeing, Depression, and Anxiety",
     "verified": false,
-    "text": "Healthcare professionals should routinely screen all adolescents and women with PCOS for symptoms of depression and anxiety using validated instruments (such as PHQ-9 and GAD-7). When screening identifies elevated psychological distress, appropriate compassionate support and evidence-based mental health referral (including psychological therapy such as cognitive behavioural therapy) should be provided."
+    "text": "Healthcare professionals should routinely screen all adolescents and women with PCOS for symptoms of depression and anxiety using validated instruments (such as PHQ-9 and GAD-7). When screening identifies elevated psychological distress, appropriate compassionate support and evidence-based mental health referral (including psychological therapy such as cognitive behavioural therapy) should be provided.",
+    "review_status": "UNVERIFIED: locator and text not yet checked against the source"
   },
   {
     "id": "PHQ9-KROENKE-2001-01",
-    "tags": ["mental"],
+    "tags": [
+      "mental"
+    ],
     "source": "Kroenke K, Spitzer RL, Williams JB. The PHQ-9: validity of a brief depression severity measure. J Gen Intern Med 2001;16(9):606-613",
     "url": "https://link.springer.com/article/10.1046/j.1525-1497.2001.016009606.x",
     "locator": "PHQ-9 Scoring Table & Item 9 Safety Protocol",
     "verified": false,
-    "text": "The Patient Health Questionnaire-9 (PHQ-9) scores depressive symptom frequency over 2 weeks from 0 to 27 (scores 5-9 mild, 10-14 moderate, 15-19 moderately severe, 20-27 severe). Any affirmative response to Item 9 (thoughts of self-harm or suicidal ideation) mandates immediate clinical safety assessment and emergency crisis helpline linkage."
+    "text": "The Patient Health Questionnaire-9 (PHQ-9) scores depressive symptom frequency over 2 weeks from 0 to 27 (scores 5-9 mild, 10-14 moderate, 15-19 moderately severe, 20-27 severe). Any affirmative response to Item 9 (thoughts of self-harm or suicidal ideation) mandates immediate clinical safety assessment and emergency crisis helpline linkage.",
+    "review_status": "UNVERIFIED: locator and text not yet checked against the source"
   },
   {
     "id": "GAD7-SPITZER-2006-01",
-    "tags": ["mental"],
+    "tags": [
+      "mental"
+    ],
     "source": "Spitzer RL, Kroenke K, Williams JB, Löwe B. A brief measure for assessing generalized anxiety disorder: the GAD-7. Arch Intern Med 2006;166(10):1092-1097",
     "url": "https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/410326",
     "locator": "GAD-7 Severity Scoring",
     "verified": false,
-    "text": "The Generalized Anxiety Disorder 7-item (GAD-7) scale assesses core anxiety symptom burden (scores 5-9 mild, 10-14 moderate, 15-21 severe anxiety). It serves as a validated self-report screening tool indicating when clinical evaluation for anxiety disorders is warranted."
+    "text": "The Generalized Anxiety Disorder 7-item (GAD-7) scale assesses core anxiety symptom burden (scores 5-9 mild, 10-14 moderate, 15-21 severe anxiety). It serves as a validated self-report screening tool indicating when clinical evaluation for anxiety disorders is warranted.",
+    "review_status": "UNVERIFIED: locator and text not yet checked against the source"
   },
   {
     "id": "PCOS-GL-2023-SLEEP-01",
-    "tags": ["sleep"],
+    "tags": [
+      "sleep"
+    ],
     "source": "International Evidence-based Guideline for PCOS 2023 (Teede et al., Hum Reprod 2023)",
     "url": "https://academic.oup.com/humrep/article/38/9/1655/7241315",
     "locator": "Section 3.3 Obstructive Sleep Apnea",
     "verified": false,
-    "text": "Women with PCOS have a significantly increased prevalence of obstructive sleep apnoea (OSA), independent of body weight. Clinicians should inquire about symptoms including habitual snoring, witnessed breath pauses, unrestful sleep, and daytime hypersomnolence, referring for polysomnography or specialist evaluation when suspected."
+    "text": "Women with PCOS have a significantly increased prevalence of obstructive sleep apnoea (OSA), independent of body weight. Clinicians should inquire about symptoms including habitual snoring, witnessed breath pauses, unrestful sleep, and daytime hypersomnolence, referring for polysomnography or specialist evaluation when suspected.",
+    "review_status": "UNVERIFIED: locator and text not yet checked against the source"
   },
   {
     "id": "PCOS-GL-2023-FERTILITY-01",
-    "tags": ["fertility"],
+    "tags": [
+      "fertility"
+    ],
     "source": "International Evidence-based Guideline for PCOS 2023 (Teede et al., Hum Reprod 2023)",
     "url": "https://academic.oup.com/humrep/article/38/9/1655/7241315",
     "locator": "Section 5.1 Preconception and Fertility Evaluation",
     "verified": false,
-    "text": "Preconception assessment should address general health, folic acid supplementation, metabolic status, and cycle frequency. In women seeking pregnancy with anovulatory PCOS, structured evaluation and evidence-based non-pharmacological and pharmacological ovulation induction pathways should be planned in partnership with reproductive healthcare specialists."
+    "text": "Preconception assessment should address general health, folic acid supplementation, metabolic status, and cycle frequency. In women seeking pregnancy with anovulatory PCOS, structured evaluation and evidence-based non-pharmacological and pharmacological ovulation induction pathways should be planned in partnership with reproductive healthcare specialists.",
+    "review_status": "UNVERIFIED: locator and text not yet checked against the source"
   },
   {
     "id": "PCOS-GL-2023-MENOPAUSE-01",
-    "tags": ["menopause", "bone", "cardiovascular"],
+    "tags": [
+      "menopause",
+      "bone",
+      "cardiovascular"
+    ],
     "source": "International Evidence-based Guideline for PCOS 2023 (Teede et al., Hum Reprod 2023)",
     "url": "https://academic.oup.com/humrep/article/38/9/1655/7241315",
     "locator": "Section 6.1 Long-term Health and Menopausal Transition",
     "verified": false,
-    "text": "In the menopausal transition and post-menopause, women with a history of PCOS continue to have elevated risks for cardiovascular events, dyslipidemia, and metabolic conditions. Preventive bone and cardiovascular screening remains important. Any new postmenopausal vaginal bleeding or rapidly developing androgenic symptoms requires prompt clinical evaluation to exclude endometrial hyperplasia or ovarian/adrenal neoplasms."
+    "text": "In the menopausal transition and post-menopause, women with a history of PCOS continue to have elevated risks for cardiovascular events, dyslipidemia, and metabolic conditions. Preventive bone and cardiovascular screening remains important. Any new postmenopausal vaginal bleeding or rapidly developing androgenic symptoms requires prompt clinical evaluation to exclude endometrial hyperplasia or ovarian/adrenal neoplasms.",
+    "review_status": "UNVERIFIED: locator and text not yet checked against the source"
   }
 ]

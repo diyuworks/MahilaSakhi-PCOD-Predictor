@@ -1,5 +1,6 @@
 import React from "react";
 import { t } from "../../i18n";
+import ReadAloudButton from "../ReadAloudButton";
 
 export const PHQ9_ITEMS = [
   "Little interest or pleasure in doing things",
@@ -32,8 +33,16 @@ export default function WellbeingStep({
 }) {
   return (
     <div className="step-panel card">
-      <h3 className="section-title">{t("wizard.wellbeing.title", lang)}</h3>
-      <p className="section-subtitle">{t("wizard.wellbeing.subtitle", lang)}</p>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
+        <div>
+          <h3 className="section-title">{t("wizard.wellbeing.title", lang)}</h3>
+          <p className="section-subtitle">{t("wizard.wellbeing.subtitle", lang)}</p>
+        </div>
+        <ReadAloudButton
+          text={`${t("wizard.wellbeing.title", lang)}. ${t("wizard.wellbeing.subtitle", lang)}`}
+          lang={lang}
+        />
+      </div>
 
       {(profile.wellbeing?.phq9_item9 || 0) > 0 && (
         <div className="red-flag-banner urgency-today" role="alert" style={{ marginBottom: "1.5rem" }}>

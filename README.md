@@ -123,6 +123,30 @@ When pelvic ultrasound findings are omitted, sensitivity/recall drops precipitou
 
 ---
 
+## 🎙️ Voice: How It Works and Privacy
+
+MahilaSakhi integrates bilingual speech capabilities (Speech-to-Text via Web Speech API `SpeechRecognition` and Text-to-Speech via `speechSynthesis`) directly into the clinical care map and assistant:
+
+### 1. Architectural Guardrails
+* **Existing Clinical Pipeline Unchanged**: Voice operates strictly as an accessible input/output layer on top of `/chat`. Spoken queries undergo identical safety checking (`backend/v3/safety.py`), intent routing, and clinical bounds. No unverified voice-to-profile extraction or separate LLM bypassing occurs.
+* **Never Auto-Sent**: Speech transcripts populate the input box for patient inspection and editing. The message is only transmitted when the user explicitly clicks the Send button.
+* **Read-Aloud TTS**: Each assistant message provides a "Listen / Stop" button. Tapping reads guideline answers aloud at a natural pace (0.95x rate). Wizard questions and Care Map cards also include a small speaker button for audio accessibility without auto-playing. Respects `prefers-reduced-motion`.
+* **Crisis Safety**: In life-safety situations (self-harm or acute crisis), spoken guidance is accompanied by an unmissable, high-contrast tappable `tel:14416` button connecting directly to India's national Tele-MANAS helpline.
+
+### 2. Privacy & Zero-Persistence Guarantee
+* **No Server Audio Storage**: MahilaSakhi never records, streams, logs, or stores audio data or voice transcripts on any server.
+* **Client-Side Speech Processing**: Audio is processed directly by the client browser's speech recognition engine (e.g. Google's on-device/browser speech service in Chrome).
+* **Explicit User Consent**: A dedicated bilingual Voice Privacy dialog appears before the microphone is enabled for the first time, noting browser speech processing and advising headphones in shared/public places. Consent is held in client React state only (never persisted to localStorage or cookies).
+* **Graceful Fallback**: If speech recognition is unsupported or permission is denied, a friendly localized banner appears and standard text interaction continues without disruption.
+
+### 3. Manual Testing Checklist
+* **Chrome Desktop (Windows/macOS)**: Click mic, accept privacy dialog, speak English query -> text populates input field -> edit and submit. Click Listen on assistant answer -> audio speaks and Stop toggles.
+* **Chrome Android**: Toggle Hindi -> click mic -> speak "pcod me kya diet leni chahiye" -> Hindi transcript appears in input field -> send -> verify Hindi TTS voice.
+* **Offline Behavior**: When disconnected, browser speech recognition triggers a friendly network error notice while typing remains accessible.
+* **Firefox & Safari Behavior**: Safari and desktop Firefox have partial or vendor-prefixed SpeechRecognition support; if unsupported, the app displays a clear, localized message advising the user to continue typing.
+
+---
+
 ## ⚙️ How to Run & Test the Project
 
 ### 1️⃣ Clone & Setup

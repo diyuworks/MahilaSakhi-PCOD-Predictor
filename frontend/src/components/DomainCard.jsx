@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { t } from "../i18n";
+import ReadAloudButton from "./ReadAloudButton";
 
 export default function DomainCard({
   domainItem,
@@ -64,9 +65,15 @@ export default function DomainCard({
           <span className="rank-badge" aria-label={`Rank ${rank}`}>#{rank}</span>
           <h4 className="domain-heading">{domainDisplayName}</h4>
         </div>
-        <div className={`tier-chip chip-${tier}`}>
-          <span className="chip-indicator" aria-hidden="true">●</span>
-          <span>{tierLabel}</span>
+        <div className="domain-card-top-actions" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <ReadAloudButton
+            text={`${domainDisplayName}. ${tierLabel}. ${t("care_map.why_ranked", lang)}: ${whyText}`}
+            lang={lang}
+          />
+          <div className={`tier-chip chip-${tier}`}>
+            <span className="chip-indicator" aria-hidden="true">●</span>
+            <span>{tierLabel}</span>
+          </div>
         </div>
       </div>
 

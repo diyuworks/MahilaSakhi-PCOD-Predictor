@@ -1,6 +1,7 @@
 import React from "react";
 import { t } from "../../i18n";
 import ImpactChips from "../ImpactChips";
+import ReadAloudButton from "../ReadAloudButton";
 
 export default function ImpactStep({
   profile,
@@ -8,14 +9,20 @@ export default function ImpactStep({
   updateSubField,
   lang,
 }) {
+  const titleText = lang === "hi" ? "दैनिक जीवन और आत्मविश्वास पर प्रभाव" : "Daily Life & Confidence Impact";
+  const subtitleText = lang === "hi"
+    ? "प्रत्येक लक्षण आपकी दिनचर्या, ऊर्जा या आत्मविश्वास को कितना प्रभावित करता है?"
+    : "How significantly does each of your reported symptoms affect your daily life?";
+
   return (
     <div className="step-panel card">
-      <h3 className="section-title">{lang === "hi" ? "दैनिक जीवन और आत्मविश्वास पर प्रभाव" : "Daily Life & Confidence Impact"}</h3>
-      <p className="section-subtitle">
-        {lang === "hi"
-          ? "प्रत्येक लक्षण आपकी दिनचर्या, ऊर्जा या आत्मविश्वास को कितना प्रभावित करता है?"
-          : "How significantly does each of your reported symptoms affect your daily life?"}
-      </p>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
+        <div>
+          <h3 className="section-title">{titleText}</h3>
+          <p className="section-subtitle">{subtitleText}</p>
+        </div>
+        <ReadAloudButton text={`${titleText}. ${subtitleText}`} lang={lang} />
+      </div>
 
       <div className="impact-sections-stack">
         {profile.symptoms?.facial_hair && profile.symptoms?.facial_hair !== "none" && (

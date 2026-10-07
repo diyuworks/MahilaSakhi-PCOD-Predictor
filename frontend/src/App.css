@@ -2171,6 +2171,253 @@ body {
   padding: 6px 14px;
 }
 
+/* Voice Input & Output Styles (Phase C) */
+.chatbot-input-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.chatbot-mic-btn {
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.15rem;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.chatbot-mic-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.chatbot-mic-btn:focus-visible {
+  box-shadow: 0 0 0 3px rgba(194, 37, 92, 0.25);
+  border-color: #c2255c;
+}
+
+.chatbot-mic-btn.listening {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #dc2626;
+  animation: pulse-mic 1.4s infinite;
+}
+
+.chatbot-mic-btn.speaking {
+  background: #f0f9ff;
+  color: #0284c7;
+  border-color: #38bdf8;
+}
+
+@keyframes pulse-mic {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.chatbot-input-field.listening-active {
+  border-color: #ef4444;
+  background: #fffafa;
+}
+
+/* Assistant Message Actions & TTS Button */
+.chat-message-actions {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-tts-btn {
+  min-height: 36px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.chat-tts-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.chat-tts-btn.active {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+}
+
+/* Voice Error Banner */
+.chat-voice-error-banner {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  margin: 6px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.btn-voice-error-dismiss {
+  background: none;
+  border: none;
+  color: #92400e;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+/* Voice Consent Modal */
+.voice-consent-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 16px;
+}
+
+.voice-consent-card {
+  background: #ffffff;
+  border-radius: 12px;
+  max-width: 440px;
+  width: 100%;
+  padding: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+}
+
+.voice-consent-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 12px 0;
+}
+
+.voice-consent-text {
+  font-size: 0.92rem;
+  color: #334155;
+  line-height: 1.5;
+  margin: 0 0 12px 0;
+}
+
+.voice-consent-text.tip-text {
+  font-size: 0.85rem;
+  color: #0369a1;
+  background: #f0f9ff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #bae6fd;
+}
+
+.voice-consent-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-modal-cancel {
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-modal-accept {
+  min-height: 44px;
+  padding: 8px 18px;
+  border: none;
+  background: #c2255c;
+  color: #ffffff;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-modal-accept:hover {
+  background: #a61e4d;
+}
+
+/* Read-Aloud Speaker Button in Wizard & Care Map (C6) */
+.btn-read-aloud {
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.05rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.btn-read-aloud:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+.btn-read-aloud:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(194, 37, 92, 0.25);
+  border-color: #c2255c;
+}
+
+.btn-read-aloud.active {
+  background: #e0f2fe;
+  border-color: #38bdf8;
+  color: #0284c7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chatbot-mic-btn.listening {
+    animation: none !important;
+  }
+}
+
+
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .chatbot-launcher-btn {

@@ -1,5 +1,6 @@
 import React from "react";
 import { t } from "../../i18n";
+import ReadAloudButton from "../ReadAloudButton";
 
 export default function MetabolicStep({
   profile,
@@ -11,8 +12,16 @@ export default function MetabolicStep({
 }) {
   return (
     <div className="step-panel card">
-      <h3 className="section-title">{t("wizard.metabolic.title", lang)}</h3>
-      <p className="section-subtitle">{t("wizard.metabolic.subtitle", lang)}</p>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
+        <div>
+          <h3 className="section-title">{t("wizard.metabolic.title", lang)}</h3>
+          <p className="section-subtitle">{t("wizard.metabolic.subtitle", lang)}</p>
+        </div>
+        <ReadAloudButton
+          text={`${t("wizard.metabolic.title", lang)}. ${t("wizard.metabolic.subtitle", lang)}`}
+          lang={lang}
+        />
+      </div>
 
       <div className="grid-2-inputs">
         <div className="form-field-group">

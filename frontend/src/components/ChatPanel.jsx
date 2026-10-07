@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { t } from "../i18n";
 import { sendChatMessage } from "../api/v3";
+import { useVoiceInput, speak, stopSpeaking, voiceSupported } from "../hooks/useVoice";
 
 function renderMessageText(text) {
   if (!text) return null;
@@ -53,6 +54,21 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
   const [failedMessage, setFailedMessage] = useState(null);
   const [stillWorking, setStillWorking] = useState(false);
 
+  // Voice States (stored in React state only per zero-persistence privacy rule)
+  const [hasVoiceConsent, setHasVoiceConsent] = useState(false);
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [speakingIdx, setSpeakingIdx] = useState(null);
+  const [voiceError, setVoiceError] = useState(null);
+
+  const {
+    state: voiceState,
+    transcript,
+    error: sttError,
+    start: startVoice,
+    stop: stopVoice,
+    reset: resetVoice,
+  } = useVoiceInput(lang);
+
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -74,7 +90,7 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
     }
   }, [messages, isOpen, loading, stillWorking]);
 
-  // "Still working..." timer after 6 seconds of loading
+  // "Still working..." timer after 6 seconds of loading (C7)
   useEffect(() => {
     let timer;
     if (loading) {
@@ -88,18 +104,48 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
     return () => clearTimeout(timer);
   }, [loading]);
 
+  // When speech transcript updates, populate input box without auto-sending (C2)
+  useEffect(() => {
+    if (transcript) {
+      setInput(transcript);
+    }
+  }, [transcript]);
+
+  // STT error propagation (C5)
+  useEffect(() => {
+    if (sttError) {
+      setVoiceError(sttError);
+    }
+  }, [sttError]);
+
+  // Clean up speaking when panel closes or unmounts
+  useEffect(() => {
+    return () => {
+      stopSpeaking();
+    };
+  }, []);
+
   const handleSend = async (textToSend, isRetry = false) => {
     const query = (textToSend !== undefined ? textToSend : input).trim();
     if (!query || loading) return;
 
+    // Stop active listening or speaking when sending
+    if (voiceState === "listening") {
+      stopVoice();
+    }
+    if (speakingIdx !== null) {
+      stopSpeaking();
+      setSpeakingIdx(null);
+    }
+
     let updatedMessages;
     if (isRetry) {
-      // Do not duplicate in message history when retrying
       updatedMessages = [...messages];
     } else {
       updatedMessages = [...messages, { sender: "user", text: query }];
       setMessages(updatedMessages);
       setInput("");
+      resetVoice();
     }
 
     setError(null);
@@ -112,9 +158,10 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
         content: m.text,
       }));
 
-      const resolvedProfile = profile && Object.keys(profile).length > 0
-        ? profile
-        : (assessmentResult?.profile || {});
+      const resolvedProfile =
+        profile && Object.keys(profile).length > 0
+          ? profile
+          : assessmentResult?.profile || {};
 
       const res = await sendChatMessage({
         message: query,
@@ -156,6 +203,69 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
     handleSend(failedMessage, true);
   };
 
+  // Mic Button Click Handler (C1, C4)
+  const handleMicClick = () => {
+    setVoiceError(null);
+    if (!voiceSupported.stt) {
+      setVoiceError("unsupported");
+      return;
+    }
+    if (!hasVoiceConsent) {
+      setShowConsentModal(true);
+      return;
+    }
+    if (voiceState === "listening") {
+      stopVoice();
+    } else {
+      startVoice();
+    }
+  };
+
+  // Voice Consent Accepted Handler (C4)
+  const handleConsentAccept = () => {
+    setHasVoiceConsent(true);
+    setShowConsentModal(false);
+    startVoice();
+  };
+
+  // Assistant Message TTS (Listen / Stop) Handler (C3)
+  const handleToggleSpeak = (msgText, idx) => {
+    if (speakingIdx === idx) {
+      stopSpeaking();
+      setSpeakingIdx(null);
+    } else {
+      stopSpeaking();
+      setSpeakingIdx(idx);
+      const ok = speak(msgText, lang, () => {
+        setSpeakingIdx(null);
+      });
+      if (!ok) {
+        setSpeakingIdx(null);
+        setVoiceError("tts_unavailable");
+      }
+    }
+  };
+
+  const getVoiceErrorMessage = () => {
+    if (!voiceError) return null;
+    switch (voiceError) {
+      case "unsupported":
+        return t("voice.err_unsupported", lang) || "Voice input is not supported in this browser. You can continue typing.";
+      case "not-allowed":
+        return t("voice.err_not_allowed", lang) || "Microphone access was denied. Please allow microphone permissions, or continue typing.";
+      case "no-speech":
+        return t("voice.err_no_speech", lang) || "No speech detected. Please try again or type your question.";
+      case "network":
+        return t("voice.err_network", lang) || "Speech recognition network issue. Please check your connection or continue typing.";
+      case "language-not-supported":
+        return t("voice.err_language", lang) || "Voice input is not available in this language on your browser. Please type your question.";
+      case "tts_unavailable":
+        return t("voice.tts_unavailable", lang) || "Text-to-speech voice is unavailable on this device.";
+      default:
+        return t("voice.err_network", lang) || "Voice issue encountered. You can continue typing.";
+    }
+  };
+
   return (
     <>
       {/* Floating launcher trigger button at bottom-right */}
@@ -168,8 +278,12 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
       >
         <span className="launcher-text">
           {isOpen
-            ? (lang === "hi" ? "बंद करें" : "Close")
-            : (lang === "hi" ? "सखी AI सहायक" : "Ask Sakhi AI")}
+            ? lang === "hi"
+              ? "बंद करें"
+              : "Close"
+            : lang === "hi"
+            ? "सखी AI सहायक"
+            : "Ask Sakhi AI"}
         </span>
         {!isOpen && <span className="launcher-pulse-dot" aria-hidden="true"></span>}
       </button>
@@ -181,7 +295,7 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
           role="region"
           aria-label="Care Map AI Assistant Chatbot"
         >
-          {/* Header (No misleading 2023 Evidence badge) */}
+          {/* Header */}
           <div className="chatbot-header">
             <div className="chatbot-header-info">
               <div className="chatbot-avatar" aria-hidden="true">AI</div>
@@ -201,7 +315,7 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
             </button>
           </div>
 
-          {/* Starter Chips from i18n */}
+          {/* Starter Chips */}
           <div className="chat-starter-chips-docked" role="group" aria-label="Suggested questions">
             {Array.isArray(starterChips) &&
               starterChips.map((chip, i) => (
@@ -227,7 +341,9 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
                     : "Hello! Ask anything about your priorities, doctor questions, or lifestyle guidance."}
                 </p>
                 <small className="welcome-hint">
-                  {lang === "hi" ? "ऊपर दिए गए सुझाव पर क्लिक करें या नीचे लिखें।" : "Tap a suggestion above or type below."}
+                  {lang === "hi"
+                    ? "ऊपर दिए गए सुझाव पर क्लिक करें या बोलकर/लिखकर पूछें।"
+                    : "Tap a suggestion above, type, or tap the microphone to speak."}
                 </small>
               </div>
             )}
@@ -235,7 +351,7 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
             {messages.map((m, idx) => (
               <div key={idx} className={`chat-bubble-row ${m.sender}`}>
                 <div className={`chat-bubble ${m.sender}`}>
-                  {/* Route Label by route */}
+                  {/* Route Label badge */}
                   {m.sender === "assistant" && m.route && (
                     <div className="chat-route-badge-container">
                       {m.route === "deterministic" && (
@@ -261,21 +377,28 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
                     </div>
                   )}
 
-                  {/* Plain-text formatted message content */}
+                  {/* Message Content */}
                   <div className="chat-text-content">
                     {renderMessageText(m.text)}
                   </div>
 
-                  {/* Urgent crisis call link */}
-                  {m.sender === "assistant" && (m.urgent || (m.route === "safety" && m.text && m.text.includes("14416"))) && (
-                    <div className="chat-crisis-actions">
-                      <a href="tel:14416" className="crisis-tel-btn tele-manas" role="button">
-                        📞 {t("care_map.call_tele_manas", lang) || "Call Tele-MANAS: 14416 (24x7 Free)"}
-                      </a>
-                    </div>
-                  )}
+                  {/* Urgent Crisis Call Action (C3) */}
+                  {m.sender === "assistant" &&
+                    (m.urgent ||
+                      (m.route === "safety" && m.text && m.text.includes("14416"))) && (
+                      <div className="chat-crisis-actions">
+                        <a
+                          href="tel:14416"
+                          className="crisis-tel-btn tele-manas"
+                          role="button"
+                          aria-label="Call Tele-MANAS hotline at 14416"
+                        >
+                          📞 {t("care_map.call_tele_manas", lang) || "Call Tele-MANAS: 14416 (24x7 Free)"}
+                        </a>
+                      </div>
+                    )}
 
-                  {/* Grounded sources collapsed row */}
+                  {/* Grounded Sources Collapsible */}
                   {m.sender === "assistant" && m.route === "grounded" && m.cites?.length > 0 && (
                     <details className="chat-sources-accordion">
                       <summary className="chat-sources-summary">
@@ -288,16 +411,50 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
                       </ul>
                     </details>
                   )}
+
+                  {/* Assistant TTS Listen / Stop Button (C3) */}
+                  {m.sender === "assistant" && (
+                    <div className="chat-message-actions">
+                      <button
+                        type="button"
+                        className={`chat-tts-btn ${speakingIdx === idx ? "active" : ""}`}
+                        onClick={() => handleToggleSpeak(m.text, idx)}
+                        aria-label={
+                          speakingIdx === idx
+                            ? t("voice.stop", lang) || "Stop"
+                            : t("voice.listen", lang) || "Listen"
+                        }
+                        title={
+                          speakingIdx === idx
+                            ? t("voice.stop", lang) || "Stop"
+                            : t("voice.listen", lang) || "Listen"
+                        }
+                      >
+                        {speakingIdx === idx ? "⏹ " : "🔊 "}
+                        {speakingIdx === idx
+                          ? t("voice.stop", lang) || "Stop"
+                          : t("voice.listen", lang) || "Listen"}
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
 
+            {/* Latency UX: Thinking & Still working (C7) */}
             {loading && (
               <div className="chat-bubble-row assistant">
-                <div className="chat-bubble assistant typing-bubble" aria-label="Assistant is typing">
-                  <span className="typing-dot"></span>
-                  <span className="typing-dot"></span>
-                  <span className="typing-dot"></span>
+                <div
+                  className="chat-bubble assistant typing-bubble"
+                  aria-label="Assistant is thinking"
+                  role="status"
+                >
+                  <span className="typing-text">
+                    {t("care_map.chat_thinking", lang) || "Thinking..."}
+                  </span>
+                  <span className="typing-dot" aria-hidden="true"></span>
+                  <span className="typing-dot" aria-hidden="true"></span>
+                  <span className="typing-dot" aria-hidden="true"></span>
                 </div>
                 {stillWorking && (
                   <div className="chat-still-working-notice" role="status">
@@ -307,6 +464,7 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
               </div>
             )}
 
+            {/* General Network Error */}
             {error && (
               <div className="chat-error-notice" role="alert">
                 <span>{error}</span>
@@ -320,10 +478,26 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
                 </button>
               </div>
             )}
+
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input form */}
+          {/* Voice Error Banner (C5) */}
+          {voiceError && (
+            <div className="chat-voice-error-banner" role="alert">
+              <span className="voice-error-text">{getVoiceErrorMessage()}</span>
+              <button
+                type="button"
+                className="btn-voice-error-dismiss"
+                onClick={() => setVoiceError(null)}
+                aria-label="Dismiss voice error"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {/* Input Bar: typing NEVER blocked during loading (C7) */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -336,10 +510,13 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={t("care_map.chat_placeholder", lang)}
-              className="chatbot-input-field"
+              placeholder={
+                voiceState === "listening"
+                  ? t("voice.mic_listening", lang) || "Listening... speak now"
+                  : t("care_map.chat_placeholder", lang)
+              }
+              className={`chatbot-input-field ${voiceState === "listening" ? "listening-active" : ""}`}
               aria-label="Ask assistant a question"
-              disabled={loading}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -347,19 +524,85 @@ export default function ChatPanel({ assessmentResult, profile = {}, lang = "en",
                 }
               }}
             />
-            <button
-              type="submit"
-              className="chatbot-send-btn"
-              disabled={loading || !input.trim()}
-              aria-label="Send message"
-            >
-              ➤
-            </button>
+
+            <div className="chatbot-input-btn-group">
+              {/* Mic Button: min 44px touch target, states: idle/listening/speaking (C1) */}
+              <button
+                type="button"
+                className={`chatbot-mic-btn ${voiceState === "listening" ? "listening" : ""} ${speakingIdx !== null ? "speaking" : ""}`}
+                onClick={handleMicClick}
+                aria-label={
+                  voiceState === "listening"
+                    ? t("voice.mic_stop", lang) || "Stop listening"
+                    : t("voice.mic_label", lang) || "Speak question"
+                }
+                title={
+                  voiceState === "listening"
+                    ? t("voice.mic_stop", lang) || "Stop listening"
+                    : t("voice.mic_label", lang) || "Speak question"
+                }
+              >
+                {voiceState === "listening" ? "⏹" : "🎙"}
+              </button>
+
+              {/* Send Button */}
+              <button
+                type="submit"
+                className="chatbot-send-btn"
+                disabled={loading || !input.trim()}
+                aria-label="Send message"
+              >
+                ➤
+              </button>
+            </div>
           </form>
 
-          {/* Visible "Not a diagnosis" note under input */}
+          {/* Not a Diagnosis note */}
           <div className="chatbot-not-diagnosis-note">
-            <small>{t("care_map.chat_not_diagnosis", lang) || "Not a diagnosis • Educational guidance for doctor visits"}</small>
+            <small>
+              {t("care_map.chat_not_diagnosis", lang) ||
+                "Not a diagnosis • Educational guidance for doctor visits"}
+            </small>
+          </div>
+        </div>
+      )}
+
+      {/* Voice Consent Modal (C4) - state in React only */}
+      {showConsentModal && (
+        <div
+          className="modal-backdrop voice-consent-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="voice-consent-title"
+        >
+          <div className="modal-dialog-box voice-consent-card">
+            <h3 id="voice-consent-title" className="voice-consent-title">
+              {t("voice.consent_title", lang) || "Voice Input & Privacy"}
+            </h3>
+            <p className="voice-consent-text">
+              {t("voice.consent_p1", lang) ||
+                "Voice recognition is processed by your browser's speech service (such as Google for Chrome). MahilaSakhi never records or stores your audio or transcripts."}
+            </p>
+            <p className="voice-consent-text tip-text">
+              🎧 {t("voice.consent_p2", lang) ||
+                "For your privacy, we recommend using headphones in public or shared places."}
+            </p>
+            <div className="voice-consent-actions">
+              <button
+                type="button"
+                className="btn-modal-cancel"
+                onClick={() => setShowConsentModal(false)}
+              >
+                {t("voice.consent_cancel", lang) || "Cancel"}
+              </button>
+              <button
+                type="button"
+                className="btn-modal-accept"
+                onClick={handleConsentAccept}
+              >
+                {t("voice.consent_accept", lang) || "I Understand & Proceed"}
+              </button>
+            </div>
           </div>
         </div>
       )}

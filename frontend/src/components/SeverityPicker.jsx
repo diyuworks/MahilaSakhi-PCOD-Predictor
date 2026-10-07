@@ -1,4 +1,5 @@
 import React from "react";
+import ReadAloudButton from "./ReadAloudButton";
 
 export default function SeverityPicker({
   title,
@@ -7,14 +8,20 @@ export default function SeverityPicker({
   value,
   onChange,
   groupName,
+  lang = "en",
 }) {
+  const speechText = `${title}. ${desc || ""}`;
+
   return (
     <div className="severity-picker-group" role="radiogroup" aria-labelledby={`${groupName}-title`}>
-      <div className="severity-picker-header">
-        <h4 id={`${groupName}-title`} className="severity-group-title">
-          {title}
-        </h4>
-        {desc && <p className="severity-group-desc">{desc}</p>}
+      <div className="severity-picker-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px" }}>
+        <div>
+          <h4 id={`${groupName}-title`} className="severity-group-title">
+            {title}
+          </h4>
+          {desc && <p className="severity-group-desc">{desc}</p>}
+        </div>
+        <ReadAloudButton text={speechText} lang={lang} />
       </div>
 
       <div className="severity-cards-grid">

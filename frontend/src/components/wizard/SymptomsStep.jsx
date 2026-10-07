@@ -21,6 +21,7 @@ export default function SymptomsStep({
         desc={t("wizard.symptoms.facial_hair.desc", lang)}
         value={profile.symptoms?.facial_hair}
         onChange={(val) => updateSubField("symptoms", "facial_hair", val)}
+        lang={lang}
         options={[
           { key: "none", title: t("wizard.symptoms.facial_hair.none", lang), desc: t("wizard.symptoms.facial_hair.none_desc", lang) },
           { key: "mild", title: t("wizard.symptoms.facial_hair.mild", lang), desc: t("wizard.symptoms.facial_hair.mild_desc", lang) },
@@ -37,6 +38,7 @@ export default function SymptomsStep({
         desc={t("wizard.symptoms.acne.desc", lang)}
         value={profile.symptoms?.acne}
         onChange={(val) => updateSubField("symptoms", "acne", val)}
+        lang={lang}
         options={[
           { key: "none", title: t("wizard.symptoms.acne.none", lang), desc: t("wizard.symptoms.acne.none_desc", lang) },
           { key: "occasional", title: t("wizard.symptoms.acne.occasional", lang), desc: t("wizard.symptoms.acne.occasional_desc", lang) },
@@ -53,6 +55,7 @@ export default function SymptomsStep({
         desc={t("wizard.symptoms.hair_loss.desc", lang)}
         value={profile.symptoms?.hair_loss}
         onChange={(val) => updateSubField("symptoms", "hair_loss", val)}
+        lang={lang}
         options={[
           { key: "none", title: t("wizard.symptoms.hair_loss.none", lang), desc: t("wizard.symptoms.hair_loss.none_desc", lang) },
           { key: "mild", title: t("wizard.symptoms.hair_loss.mild", lang), desc: t("wizard.symptoms.hair_loss.mild_desc", lang) },
@@ -80,6 +83,7 @@ export default function SymptomsStep({
             desc={t("wizard.symptoms.menstrual.desc", lang)}
             value={profile.symptoms?.menstrual}
             onChange={(val) => updateSubField("symptoms", "menstrual", val)}
+            lang={lang}
             options={[
               { key: "regular", title: t("wizard.symptoms.menstrual.regular", lang), desc: t("wizard.symptoms.menstrual.regular_desc", lang) },
               { key: "occasionally_irregular", title: t("wizard.symptoms.menstrual.occasionally_irregular", lang), desc: t("wizard.symptoms.menstrual.occasionally_irregular_desc", lang) },

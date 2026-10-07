@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import ChatPanel from "./ChatPanel";
 import { sendChatMessage } from "../api/v3";
 
@@ -189,4 +189,230 @@ describe("ChatPanel Component (v2)", () => {
     expect(userMessagesAfter.length).toBe(1);
     expect(screen.queryByText(/Unable to reach assistant/i)).not.toBeInTheDocument();
   });
+
+  describe("Phase C: Voice STT & TTS Capabilities", () => {
+    let originalSR;
+    let originalSS;
+    let mockInstances = [];
+
+    class MockSpeechRecognition {
+      constructor() {
+        this.lang = "en-IN";
+        this.interimResults = false;
+        this.continuous = false;
+        this.onresult = null;
+        this.onerror = null;
+        this.onend = null;
+        mockInstances.push(this);
+      }
+      start = jest.fn(() => {});
+      stop = jest.fn(() => {
+        if (this.onend) this.onend();
+      });
+      abort = jest.fn();
+    }
+
+    const mockSpeechSynthesis = {
+      speak: jest.fn(),
+      cancel: jest.fn(),
+      getVoices: jest.fn(() => [
+        { lang: "en-IN", name: "Google Indian English" },
+        { lang: "hi-IN", name: "Google Hindi" },
+      ]),
+    };
+
+    beforeEach(() => {
+      mockInstances = [];
+      originalSR = window.SpeechRecognition;
+      originalSS = window.speechSynthesis;
+      window.SpeechRecognition = MockSpeechRecognition;
+      window.speechSynthesis = mockSpeechSynthesis;
+      window.SpeechSynthesisUtterance = class MockSpeechSynthesisUtterance {
+        constructor(text) {
+          this.text = text;
+        }
+      };
+      mockSpeechSynthesis.speak.mockClear();
+      mockSpeechSynthesis.cancel.mockClear();
+      mockSpeechSynthesis.getVoices = jest.fn(() => [
+        { lang: "en-IN", name: "Google Indian English" },
+        { lang: "hi-IN", name: "Google Hindi" },
+      ]);
+    });
+
+    afterEach(() => {
+      window.SpeechRecognition = originalSR;
+      window.speechSynthesis = originalSS;
+      delete window.SpeechSynthesisUtterance;
+    });
+
+    test("Mic click prompts consent modal on first use before recording", () => {
+      render(
+        <ChatPanel
+          defaultOpen={true}
+          profile={mockProfile}
+          assessmentResult={mockAssessmentResult}
+          lang="en"
+        />
+      );
+
+      const micBtn = screen.getByRole("button", { name: /Speak your question/i });
+      fireEvent.click(micBtn);
+
+      // Consent modal appears
+      expect(screen.getByText(/Voice Input & Privacy/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/MahilaSakhi never records or stores your audio or transcripts/i)
+      ).toBeInTheDocument();
+
+      // No SpeechRecognition start before consent accepted
+      expect(mockInstances.length).toBe(0);
+
+      // Click Accept
+      const acceptBtn = screen.getByRole("button", { name: /I Understand & Proceed/i });
+      fireEvent.click(acceptBtn);
+
+      // Consent modal closed, recognition started
+      expect(screen.queryByText(/Voice Input & Privacy/i)).not.toBeInTheDocument();
+      expect(mockInstances.length).toBe(1);
+      expect(mockInstances[0].start).toHaveBeenCalled();
+    });
+
+    test("Speech transcript populates the input field and is NEVER auto-sent", async () => {
+      render(
+        <ChatPanel
+          defaultOpen={true}
+          profile={mockProfile}
+          assessmentResult={mockAssessmentResult}
+          lang="en"
+        />
+      );
+
+      // Click mic and accept consent
+      fireEvent.click(screen.getByRole("button", { name: /Speak your question/i }));
+      fireEvent.click(screen.getByRole("button", { name: /I Understand & Proceed/i }));
+
+      const rec = mockInstances[0];
+      expect(rec).toBeDefined();
+
+      // Simulate SpeechRecognition onresult event inside act
+      act(() => {
+        rec.onresult({
+          results: [
+            [{ transcript: "should I consult my gynecologist for irregular periods" }],
+          ],
+        });
+      });
+
+      const input = screen.getByLabelText(/Ask assistant a question/i);
+      await waitFor(() => {
+        expect(input.value).toBe("should I consult my gynecologist for irregular periods");
+      });
+
+      // Crucial: sendChatMessage was NOT called automatically
+      expect(sendChatMessage).not.toHaveBeenCalled();
+
+      // User manually edits the text
+      fireEvent.change(input, {
+        target: { value: "should I consult my gynecologist for irregular periods soon?" },
+      });
+      expect(input.value).toBe("should I consult my gynecologist for irregular periods soon?");
+
+      // User submits manually
+      sendChatMessage.mockResolvedValueOnce({
+        reply: "Consulting a clinician is recommended.",
+        route: "deterministic",
+      });
+      fireEvent.submit(input.closest("form"));
+      expect(sendChatMessage).toHaveBeenCalledTimes(1);
+      expect(sendChatMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: "should I consult my gynecologist for irregular periods soon?",
+        })
+      );
+    });
+
+    test("Language switch changes recognition language to hi-IN", () => {
+      render(
+        <ChatPanel
+          defaultOpen={true}
+          profile={mockProfile}
+          assessmentResult={mockAssessmentResult}
+          lang="hi"
+        />
+      );
+
+      const micBtn = screen.getByRole("button", { name: /बोलकर सवाल पूछें/i });
+      fireEvent.click(micBtn);
+      fireEvent.click(screen.getByRole("button", { name: /मैं समझती हूँ, आगे बढ़ें/i }));
+
+      expect(mockInstances.length).toBe(1);
+      expect(mockInstances[0].lang).toBe("hi-IN");
+    });
+
+    test("Unsupported browser displays friendly note and text chat keeps working", () => {
+      window.SpeechRecognition = undefined;
+      window.webkitSpeechRecognition = undefined;
+
+      render(
+        <ChatPanel
+          defaultOpen={true}
+          profile={mockProfile}
+          assessmentResult={mockAssessmentResult}
+          lang="en"
+        />
+      );
+
+      const micBtn = screen.getByRole("button", { name: /Speak your question/i });
+      fireEvent.click(micBtn);
+
+      // Friendly error notice without technical jargon
+      expect(
+        screen.getByText(/Voice input is not supported in this browser. You can continue typing./i)
+      ).toBeInTheDocument();
+
+      // Text input still works seamlessly
+      const input = screen.getByLabelText(/Ask assistant a question/i);
+      fireEvent.change(input, { target: { value: "fallback text question" } });
+      expect(input.value).toBe("fallback text question");
+    });
+
+    test("Listen and Stop buttons trigger speechSynthesis speak and cancel", async () => {
+      sendChatMessage.mockResolvedValueOnce({
+        reply: "Here is your personalized care plan overview.",
+        route: "deterministic",
+      });
+
+      render(
+        <ChatPanel
+          defaultOpen={true}
+          profile={mockProfile}
+          assessmentResult={mockAssessmentResult}
+          lang="en"
+        />
+      );
+
+      const input = screen.getByLabelText(/Ask assistant a question/i);
+      fireEvent.change(input, { target: { value: "overview" } });
+      fireEvent.submit(input.closest("form"));
+
+      expect(await screen.findByText(/Here is your personalized care plan overview/i)).toBeInTheDocument();
+
+      // Click Listen
+      const listenBtn = screen.getByRole("button", { name: /Listen/i });
+      fireEvent.click(listenBtn);
+
+      expect(mockSpeechSynthesis.cancel).toHaveBeenCalled();
+      expect(mockSpeechSynthesis.speak).toHaveBeenCalledTimes(1);
+
+      // Button toggles to Stop
+      expect(screen.getByRole("button", { name: /Stop/i })).toBeInTheDocument();
+
+      // Click Stop
+      const stopBtn = screen.getByRole("button", { name: /Stop/i });
+      fireEvent.click(stopBtn);
+      expect(mockSpeechSynthesis.cancel.mock.calls.length).toBeGreaterThanOrEqual(2);
+    });
+  });
 });
+

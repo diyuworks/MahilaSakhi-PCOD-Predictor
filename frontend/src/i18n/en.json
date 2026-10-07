@@ -236,10 +236,31 @@
       "safety": "Safety & clinical guidance"
     },
     "chat_not_diagnosis": "Not a diagnosis • Educational guidance for doctor visits",
+    "chat_thinking": "Thinking...",
     "chat_still_working": "Still working...",
     "chat_retry": "Retry",
     "call_tele_manas": "Call Tele-MANAS: 14416 (24x7 Free)",
     "call_emergency": "Emergency: 112"
+  },
+  "voice": {
+    "consent_title": "Voice Input & Privacy",
+    "consent_p1": "Voice recognition is processed by your browser's speech service (such as Google for Chrome). MahilaSakhi never records or stores your audio or transcripts.",
+    "consent_p2": "For your privacy, we recommend using headphones in public or shared places.",
+    "consent_accept": "I Understand & Proceed",
+    "consent_cancel": "Cancel",
+    "mic_label": "Speak your question",
+    "mic_listening": "Listening... speak now",
+    "mic_stop": "Stop listening",
+    "listen": "Listen",
+    "stop": "Stop",
+    "read_aloud": "Read aloud",
+    "stop_read_aloud": "Stop reading",
+    "err_unsupported": "Voice input is not supported in this browser. You can continue typing.",
+    "err_not_allowed": "Microphone access was denied. Please allow microphone permissions, or continue typing.",
+    "err_no_speech": "No speech detected. Please try again or type your question.",
+    "err_network": "Speech recognition network issue. Please check your connection or continue typing.",
+    "err_language": "Voice input is not available in this language on your browser. Please type your question.",
+    "tts_unavailable": "Text-to-speech voice is unavailable on this device."
   },
   "educational_note": "Educational guidance, not a diagnosis"
 }

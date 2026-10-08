@@ -124,9 +124,7 @@ v3api._llm_client = client
 app.register_blueprint(v3api.bp)
 
 
-@app.route("/")
-def home():
-    return "MahilaSakhi PCOD API Running"
+# Legacy root endpoint replaced by SPA serve_frontend below
 
 
 @app.route('/predict', methods=['POST'])

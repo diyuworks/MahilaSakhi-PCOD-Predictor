@@ -1,4 +1,9 @@
-import os, re, logging, time
+import os, sys, re, logging, time
+# Ensure backend directory is in sys.path when running gunicorn backend.app:app
+_BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+if _BACKEND_DIR not in sys.path:
+    sys.path.insert(0, _BACKEND_DIR)
+
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import joblib

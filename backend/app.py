@@ -1,5 +1,5 @@
 import os, re, logging, time
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import joblib
 import numpy as np
@@ -26,7 +26,8 @@ from v3.context import derive_context
 from v3.chat import handle_chat
 from limiter import limiter
 
-app = Flask(__name__)
+FRONTEND_BUILD_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend", "build"))
+app = Flask(__name__, static_folder=FRONTEND_BUILD_DIR)
 
 # Restrict CORS to configured origins in production; allow local/wildcard otherwise
 _allowed_origins_env = os.environ.get("ALLOWED_ORIGIN") or os.environ.get("FRONTEND_URL")
@@ -351,6 +352,21 @@ def screen():
         },
     })
 
+
+
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve_frontend(path):
+    if path != "" and os.path.exists(os.path.join(FRONTEND_BUILD_DIR, path)):
+        return send_from_directory(FRONTEND_BUILD_DIR, path)
+    index_file = os.path.join(FRONTEND_BUILD_DIR, "index.html")
+    if os.path.exists(index_file):
+        return send_from_directory(FRONTEND_BUILD_DIR, "index.html")
+    return jsonify({
+        "service": "mahilasakhi",
+        "message": "Backend API active. Frontend build not found. Run npm run build in frontend directory."
+    }), 200
 
 if __name__ == "__main__":
     app.run(debug=True)

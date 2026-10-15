@@ -38,6 +38,7 @@ app = Flask(__name__, static_folder=FRONTEND_BUILD_DIR)
 _allowed_origins_env = os.environ.get("ALLOWED_ORIGIN") or os.environ.get("FRONTEND_URL")
 if _allowed_origins_env and os.environ.get("FLASK_ENV") == "production":
     _origins = [o.strip() for o in _allowed_origins_env.split(",") if o.strip()]
+    _origins.append(r"https://.*\.vercel\.app")
     CORS(app, origins=_origins)
 else:
     CORS(app)
